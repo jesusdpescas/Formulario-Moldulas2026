@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Formulario de Inspección de Moldes</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #e8a020;
+    --accent2: #3b82f6;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --text: #e8eaf0;
+    --muted: #7a7f9a;
+    --marked: #e8a020;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  header h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 20px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 1rem;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus {
+    border-color: var(--accent);
+  }
+
+  .field input[type="number"]::-webkit-inner-spin-button {
+    opacity: 1;
+  }
+
+  /* Referencias section */
+  .referencias-container {
+    max-width: 700px;
+    margin: 0 auto 20px;
+  }
+
+  .ref-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ref-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ref-number {
+    background: var(--accent);
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .ref-name-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 4px 0;
+    outline: none;
+    text-transform: uppercase;
+  }
+
+  .ref-name-input::placeholder { color: var(--muted); }
+  .ref-name-input:focus { border-bottom-color: var(--accent); }
+
+  .btn-remove-ref {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+  .btn-remove-ref:hover { color: var(--danger); }
+
+  .ref-body {
+    padding: 16px 20px;
+  }
+
+  .grid-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .num-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+  }
+
+  .num-cell {
+    aspect-ratio: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.12s, color 0.12s, border-color 0.12s, transform 0.1s;
+    user-select: none;
+  }
+
+  .num-cell:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    transform: scale(1.08);
+  }
+
+  .num-cell.marked {
+    background: var(--marked);
+    border-color: var(--marked);
+    color: #000;
+    font-weight: 700;
+  }
+
+  .marked-summary {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    min-height: 18px;
+  }
+
+  .marked-summary span {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Buttons */
+  .btn-add-ref {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto 20px;
+    padding: 14px;
+    background: transparent;
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    color: var(--accent2);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-add-ref:hover {
+    border-color: var(--accent2);
+    background: rgba(59, 130, 246, 0.06);
+  }
+
+  .btn-submit {
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-submit:hover { background: #f5b833; transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--success);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 12px 28px;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .num-cell { font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Inspección de Moldes</h1>
+  <p>Registro de cavidades — O-I Manufacturing</p>
+</header>
+
+<!-- Info general -->
+<div class="card">
+  <div class="card-title">Datos generales</div>
+  <div class="grid-2" style="margin-bottom:14px;">
+    <div class="field">
+      <label>Fecha</label>
+      <input type="date" id="fecha"/>
+    </div>
+    <div class="field" style="grid-column: span 1;"></div>
+  </div>
+  <div class="grid-2" style="margin-bottom:0;">
+    <div class="field">
+      <label>Primer nombre</label>
+      <input type="text" id="nombre" placeholder="Ej: Juan"/>
+    </div>
+    <div class="field">
+      <label>Apellido</label>
+      <input type="text" id="apellido" placeholder="Ej: García"/>
+    </div>
+  </div>
+</div>
+
+<!-- Cantidades -->
+<div class="card">
+  <div class="card-title">Cantidades</div>
+  <div class="grid-3">
+    <div class="field">
+      <label>Premolares</label>
+      <input type="number" id="premolares" min="0" placeholder="0"/>
+    </div>
+    <div class="field">
+      <label>Moldes</label>
+      <input type="number" id="moldes" min="0" placeholder="0"/>
+    </div>
+    <div class="field">
+      <label>DG</label>
+      <input type="number" id="dg" min="0" placeholder="0"/>
+    </div>
+  </div>
+</div>
+
+<!-- Referencias dinámicas -->
+<div class="referencias-container" id="refsContainer"></div>
+
+<button class="btn-add-ref" onclick="agregarReferencia()">
+  ＋ Agregar Referencia
+</button>
+
+<button class="btn-submit" onclick="enviarFormulario()">
+  ✓ Enviar Formulario
+</button>
+
+<div id="toast">✓ Formulario enviado correctamente</div>
+
+<script>
+  let refCount = 0;
+
+  // Set today's date by default
+  document.getElementById('fecha').valueAsDate = new Date();
+
+  function agregarReferencia() {
+    refCount++;
+    const id = `ref_${refCount}`;
+    const container = document.getElementById('refsContainer');
+
+    const div = document.createElement('div');
+    div.className = 'ref-item';
+    div.id = id;
+
+    // Header
+    div.innerHTML = `
+      <div class="ref-header">
+        <span class="ref-number">REF ${refCount}</span>
+        <input class="ref-name-input" type="text" placeholder="Nombre de la referencia (ej: 7677)" id="refName_${refCount}"/>
+        <button class="btn-remove-ref" onclick="eliminarReferencia('${id}')" title="Eliminar">✕</button>
+      </div>
+      <div class="ref-body">
+        <div class="grid-label">Selecciona las cavidades defectuosas</div>
+        <div class="num-grid" id="grid_${refCount}"></div>
+        <div class="marked-summary" id="summary_${refCount}">Ninguna cavidad marcada</div>
+      </div>
+    `;
+
+    container.appendChild(div);
+
+    // Build number grid 1-99
+    const grid = document.getElementById(`grid_${refCount}`);
+    for (let i = 1; i <= 99; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'num-cell';
+      cell.textContent = i;
+      cell.dataset.num = i;
+      cell.dataset.ref = refCount;
+      cell.onclick = () => toggleCell(cell, refCount);
+      grid.appendChild(cell);
+    }
+  }
+
+  function toggleCell(cell, refId) {
+    cell.classList.toggle('marked');
+    updateSummary(refId);
+  }
+
+  function updateSummary(refId) {
+    const grid = document.getElementById(`grid_${refId}`);
+    const marked = [...grid.querySelectorAll('.num-cell.marked')].map(c => c.dataset.num);
+    const summary = document.getElementById(`summary_${refId}`);
+    if (marked.length === 0) {
+      summary.innerHTML = 'Ninguna cavidad marcada';
+    } else {
+      summary.innerHTML = `<span>${marked.length} cavidad${marked.length > 1 ? 'es' : ''} marcada${marked.length > 1 ? 's' : ''}:</span> ${marked.join(', ')}`;
+    }
+  }
+
+  function eliminarReferencia(id) {
+    document.getElementById(id).remove();
+  }
+
+  function enviarFormulario() {
+    // Collect data
+    const fecha = document.getElementById('fecha').value;
+    const nombre = document.getElementById('nombre').value.trim();
+    const apellido = document.getElementById('apellido').value.trim();
+    const premolares = document.getElementById('premolares').value;
+    const moldes = document.getElementById('moldes').value;
+    const dg = document.getElementById('dg').value;
+
+    if (!fecha || !nombre || !apellido) {
+      alert('Por favor completa fecha, nombre y apellido.');
+      return;
+    }
+
+    const referencias = [];
+    document.querySelectorAll('.ref-item').forEach((item, idx) => {
+      const n = idx + 1;
+      // find the actual refCount id from grid
+      const grid = item.querySelector('[id^="grid_"]');
+      if (!grid) return;
+      const refId = grid.id.replace('grid_', '');
+      const nameInput = document.getElementById(`refName_${refId}`);
+      const marked = [...grid.querySelectorAll('.num-cell.marked')].map(c => parseInt(c.dataset.num));
+      referencias.push({
+        nombre: nameInput ? nameInput.value.trim() || `Referencia ${n}` : `Referencia ${n}`,
+        cavidades: marked
+      });
+    });
+
+    const payload = {
+      fecha,
+      nombre,
+      apellido,
+      premolares: parseInt(premolares) || 0,
+      moldes: parseInt(moldes) || 0,
+      dg: parseInt(dg) || 0,
+      referencias
+    };
+
+    console.log('Datos del formulario:', JSON.stringify(payload, null, 2));
+
+    // ─────────────────────────────────────────────────────────────
+    // AQUÍ va tu URL de Power Automate (HTTP Request trigger)
+    // Descomenta y reemplaza cuando tengas el flow listo:
+    //
+    // const WEBHOOK_URL = 'https://prod-XX.westus.logic.azure.com/...';
+    // fetch(WEBHOOK_URL, {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(payload)
+    // }).then(() => mostrarToast()).catch(() => alert('Error al enviar'));
+    //
+    // ─────────────────────────────────────────────────────────────
+
+    // Por ahora muestra confirmación local
+    mostrarToast();
+  }
+
+  function mostrarToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
