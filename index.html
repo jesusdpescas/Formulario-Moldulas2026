@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Formulario de Inspeccion de Moldes</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #e8a020;
+    --accent2: #3b82f6;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --text: #e8eaf0;
+    --muted: #7a7f9a;
+    --marked: #e8a020;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  header h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .draft-banner {
+    max-width: 700px;
+    margin: 0 auto 16px;
+    background: rgba(232,160,32,0.1);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: var(--accent);
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .draft-banner.visible { display: flex; }
+  .btn-clear-draft {
+    background: none;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 20px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+  }
+
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field input, .field select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 1rem;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .field select option { background: var(--surface2); color: var(--text); }
+
+  .sector-btns { display: flex; gap: 12px; }
+
+  .btn-sector {
+    flex: 1;
+    padding: 14px;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-sector.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,160,32,0.08);
+  }
+
+  .referencias-container { max-width: 700px; margin: 0 auto 20px; }
+
+  .ref-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ref-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ref-number {
+    background: var(--accent);
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .ref-name-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 4px 0;
+    outline: none;
+    text-transform: uppercase;
+  }
+  .ref-name-input::placeholder { color: var(--muted); }
+  .ref-name-input:focus { border-bottom-color: var(--accent); }
+
+  /* Tipo de molde - cuadros discretos */
+  .tipo-molde {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 160px;
+  }
+
+  .tipo-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: rgba(122,127,154,0.5);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px 6px;
+    transition: all 0.15s;
+    letter-spacing: 0.03em;
+  }
+  .tipo-btn:hover { border-color: var(--muted); color: var(--muted); }
+  .tipo-btn.selected {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,160,32,0.1);
+  }
+
+  .btn-remove-ref {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+  .btn-remove-ref:hover { color: var(--danger); }
+
+  .ref-body { padding: 16px 20px; }
+
+  .grid-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .num-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+  }
+
+  .num-cell {
+    aspect-ratio: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .num-cell:hover { border-color: var(--accent); color: var(--text); transform: scale(1.08); }
+  .num-cell.marked { background: var(--marked); border-color: var(--marked); color: #000; font-weight: 700; }
+
+  .marked-summary { margin-top: 10px; margin-bottom: 14px; font-size: 0.8rem; color: var(--muted); min-height: 18px; }
+  .marked-summary span { color: var(--accent); font-weight: 600; }
+
+  .comentario-area {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    outline: none;
+    width: 100%;
+    min-height: 70px;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+  .comentario-area::placeholder { color: var(--muted); }
+  .comentario-area:focus { border-color: var(--accent); }
+
+  .btn-add-ref {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto 20px;
+    padding: 14px;
+    background: transparent;
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    color: var(--accent2);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-add-ref:hover { border-color: var(--accent2); background: rgba(59,130,246,0.06); }
+  .btn-add-ref:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-submit {
+    display: block;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-submit:hover { background: #f5b833; transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  #welcome-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 24px;
+  }
+  #welcome-modal.hidden { display: none; }
+  .welcome-box {
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    padding: 28px 24px;
+    max-width: 380px;
+    width: 100%;
+  }
+  .welcome-box h2 {
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .welcome-box p {
+    font-size: 0.92rem;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .welcome-box .tip {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .btn-welcome {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--success);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 12px 28px;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .grid-2, .grid-3, .grid-6 { grid-template-columns: 1fr 1fr; }
+    .num-cell { font-size: 0.65rem; }
+    .sector-btns { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Welcome modal -->
+<div id="welcome-modal" class="hidden">
+  <div class="welcome-box">
+    <h2>Bienvenido al formulario</h2>
+    <p>Si cierras o recargas esta pagina, tu progreso se guarda automaticamente en este dispositivo. Puedes volver cuando quieras y continuar donde lo dejaste.</p>
+    <p class="tip">En cada referencia puedes indicar de forma opcional si es <strong>PRE, MOL, DG, 6¼ o GS</strong> usando los cuadros que aparecen al lado del nombre.</p>
+    <button class="btn-welcome" onclick="cerrarBienvenida()">Entendido</button>
+  </div>
+</div>
+
+<header>
+  <h1>Inspeccion de Moldes</h1>
+  <p>Registro de cavidades - O-I Manufacturing</p>
+</header>
+
+<div class="draft-banner" id="draftBanner">
+  Borrador guardado restaurado
+  <button class="btn-clear-draft" onclick="borrarBorrador()">Limpiar borrador</button>
+</div>
+
+<!-- Sector -->
+<div class="card">
+  <div class="card-title">Sector</div>
+  <div class="sector-btns">
+    <button class="btn-sector active" id="btnLinea" onclick="setSector('LINEA')">Linea</button>
+    <button class="btn-sector" id="btnAjustador" onclick="setSector('AJUSTADORES')">Ajustador</button>
+  </div>
+  <input type="hidden" id="sector" value="LINEA"/>
+</div>
+
+<!-- Info general -->
+<div class="card">
+  <div class="card-title">Datos generales</div>
+  <div class="grid-2" style="margin-bottom:14px;">
+    <div class="field">
+      <label>Fecha</label>
+      <input type="date" id="fecha"/>
+    </div>
+    <div class="field"></div>
+  </div>
+  <div class="field">
+    <label>Nombre</label>
+    <select id="nombre">
+      <option value="">-- Selecciona tu nombre --</option>
+    </select>
+  </div>
+</div>
+
+<!-- Cantidades -->
+<div class="card">
+  <div class="card-title">Cantidades</div>
+  <div style="display:flex; flex-direction:column; gap:14px;">
+    <div class="field">
+      <label>Premoldes</label>
+      <input type="number" id="premolares" min="0" placeholder="0" oninput="guardarBorrador()"/>
+    </div>
+    <div class="field">
+      <label>Moldes</label>
+      <input type="number" id="moldes" min="0" placeholder="0" oninput="guardarBorrador()"/>
+    </div>
+    <div class="field">
+      <label>DG</label>
+      <input type="number" id="dg" min="0" placeholder="0" oninput="guardarBorrador()"/>
+    </div>
+    <div class="field">
+      <label>6 1/4</label>
+      <input type="number" id="seisuno" min="0" placeholder="0" oninput="guardarBorrador()"/>
+    </div>
+    <div class="field">
+      <label>GS</label>
+      <input type="number" id="gs" min="0" placeholder="0" oninput="guardarBorrador()"/>
+    </div>
+  </div>
+</div>
+
+<!-- Referencias -->
+<div class="referencias-container" id="refsContainer"></div>
+
+<button class="btn-add-ref" id="btnAgregarRef" onclick="agregarReferencia()">
+  + Agregar Referencia
+</button>
+
+<button class="btn-submit" id="btnEnviar" onclick="enviarFormulario()">
+  Enviar Formulario
+</button>
+
+<div id="toast">Formulario enviado correctamente</div>
+
+<script>
+  const MAX_REFS = 8;
+  let refCount = 0;
+  const DRAFT_KEY = 'formulario_moldes_draft';
+
+  const NOMBRES = {
+    LINEA: [
+      'John Castaneda',
+      'Nelson Mantilla',
+      'Luis Miguel',
+      'Brayan Garcia',
+      'Manuel Bello'
+    ],
+    AJUSTADORES: [
+      'Jose Malaver',
+      'Daniel Cardenas',
+      'Ivan Salgado',
+      'Leandro',
+      'Jose Albino',
+      'Alexander Toro',
+      'Jose Mancipe',
+      'Miguel Cordero',
+      'Daniel Olaya'
+    ]
+  };
+
+  const TIPOS = ['PRE', 'MOL', 'DG', '6¼', 'GS'];
+
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwrSo2-Qb5QtO10vIFQErl0l57SfyZGuKdF1P4LYsqypVHMdlalhVdCcXp0ZKH9fiGs/exec';
+
+  document.getElementById('fecha').valueAsDate = new Date();
+  actualizarNombres('LINEA');
+  cargarBorrador();
+
+  function setSector(valor) {
+    document.getElementById('sector').value = valor;
+    document.getElementById('btnLinea').classList.toggle('active', valor === 'LINEA');
+    document.getElementById('btnAjustador').classList.toggle('active', valor === 'AJUSTADORES');
+    actualizarNombres(valor);
+    guardarBorrador();
+  }
+
+  function actualizarNombres(sector) {
+    var select = document.getElementById('nombre');
+    var current = select.value;
+    select.innerHTML = '<option value="">-- Selecciona tu nombre --</option>';
+    NOMBRES[sector].forEach(function(nombre) {
+      var option = document.createElement('option');
+      option.value = nombre;
+      option.textContent = nombre;
+      if (nombre === current) option.selected = true;
+      select.appendChild(option);
+    });
+  }
+
+  function agregarReferencia(datos) {
+    var totalActual = document.querySelectorAll('.ref-item').length;
+    if (totalActual >= MAX_REFS) { alert('Maximo 8 referencias.'); return; }
+
+    refCount++;
+    var id = 'ref_' + refCount;
+    var container = document.getElementById('refsContainer');
+    var div = document.createElement('div');
+    div.className = 'ref-item';
+    div.id = id;
+
+    // Tipo buttons HTML
+    var tipoHTML = '<div class="tipo-molde" id="tipo_' + refCount + '">';
+    TIPOS.forEach(function(t) {
+      tipoHTML += '<button type="button" class="tipo-btn" data-tipo="' + t + '" onclick="toggleTipo(this,' + refCount + ')">' + t + '</button>';
+    });
+    tipoHTML += '</div>';
+
+    div.innerHTML =
+      '<div class="ref-header">' +
+        '<span class="ref-number">REF ' + (totalActual + 1) + '</span>' +
+        '<input class="ref-name-input" type="text" placeholder="Nombre de la referencia (ej: 7677)" id="refName_' + refCount + '" oninput="guardarBorrador()"/>' +
+        tipoHTML +
+        '<button class="btn-remove-ref" onclick="eliminarReferencia(\'' + id + '\')" title="Eliminar">x</button>' +
+      '</div>' +
+      '<div class="ref-body">' +
+        '<div class="grid-label">Selecciona las cavidades defectuosas</div>' +
+        '<div class="num-grid" id="grid_' + refCount + '"></div>' +
+        '<div class="marked-summary" id="summary_' + refCount + '">Ninguna cavidad marcada</div>' +
+        '<div class="grid-label" style="margin-top:4px;">Comentarios</div>' +
+        '<textarea class="comentario-area" id="comentario_' + refCount + '" placeholder="Observaciones..." oninput="guardarBorrador()"></textarea>' +
+      '</div>';
+
+    container.appendChild(div);
+
+    var grid = document.getElementById('grid_' + refCount);
+    for (var i = 1; i <= 120; i++) {
+      var cell = document.createElement('div');
+      cell.className = 'num-cell';
+      cell.textContent = i;
+      cell.dataset.num = i;
+      (function(c, r) { c.onclick = function() { toggleCell(c, r); }; })(cell, refCount);
+      grid.appendChild(cell);
+    }
+
+    // Restaurar datos si existen
+    if (datos) {
+      document.getElementById('refName_' + refCount).value = datos.nombre || '';
+      document.getElementById('comentario_' + refCount).value = datos.comentario || '';
+      if (datos.tipo) {
+        var tipoBtns = document.querySelectorAll('#tipo_' + refCount + ' .tipo-btn');
+        tipoBtns.forEach(function(btn) {
+          if (btn.dataset.tipo === datos.tipo) btn.classList.add('selected');
+        });
+      }
+      if (datos.cavidades) {
+        datos.cavidades.forEach(function(num) {
+          var cells = grid.querySelectorAll('.num-cell');
+          cells.forEach(function(c) {
+            if (parseInt(c.dataset.num) === num) c.classList.add('marked');
+          });
+        });
+        updateSummary(refCount);
+      }
+    }
+
+    document.getElementById('btnAgregarRef').disabled = document.querySelectorAll('.ref-item').length >= MAX_REFS;
+  }
+
+  function toggleTipo(btn, refId) {
+    var btns = document.querySelectorAll('#tipo_' + refId + ' .tipo-btn');
+    var yaSeleccionado = btn.classList.contains('selected');
+    btns.forEach(function(b) { b.classList.remove('selected'); });
+    if (!yaSeleccionado) btn.classList.add('selected');
+    guardarBorrador();
+  }
+
+  function toggleCell(cell, refId) {
+    cell.classList.toggle('marked');
+    updateSummary(refId);
+    guardarBorrador();
+  }
+
+  function updateSummary(refId) {
+    var grid = document.getElementById('grid_' + refId);
+    var marked = Array.from(grid.querySelectorAll('.num-cell.marked')).map(function(c) { return c.dataset.num; });
+    var summary = document.getElementById('summary_' + refId);
+    if (marked.length === 0) {
+      summary.innerHTML = 'Ninguna cavidad marcada';
+    } else {
+      summary.innerHTML = '<span>' + marked.length + ' cavidad' + (marked.length > 1 ? 'es' : '') + ' marcada' + (marked.length > 1 ? 's' : '') + ':</span> ' + marked.join(', ');
+    }
+  }
+
+  function eliminarReferencia(id) {
+    document.getElementById(id).remove();
+    document.getElementById('btnAgregarRef').disabled = false;
+    guardarBorrador();
+  }
+
+  // ── BORRADOR ──────────────────────────────────────
+  var cargando = false;
+
+  function guardarBorrador() {
+    if (cargando) return;
+    var refs = [];
+    document.querySelectorAll('.ref-item').forEach(function(item) {
+      var grid = item.querySelector('[id^="grid_"]');
+      if (!grid) return;
+      var refId = grid.id.replace('grid_', '');
+      var nameInput  = document.getElementById('refName_' + refId);
+      var comentario = document.getElementById('comentario_' + refId);
+      var tipoBtn    = item.querySelector('.tipo-btn.selected');
+      var marked = Array.from(grid.querySelectorAll('.num-cell.marked')).map(function(c) { return parseInt(c.dataset.num); });
+      refs.push({
+        nombre:     nameInput  ? nameInput.value  : '',
+        comentario: comentario ? comentario.value : '',
+        tipo:       tipoBtn    ? tipoBtn.dataset.tipo : '',
+        cavidades:  marked
+      });
+    });
+
+    var draft = {
+      fecha:     document.getElementById('fecha').value,
+      nombre:    document.getElementById('nombre').value,
+      sector:    document.getElementById('sector').value,
+      premolares: document.getElementById('premolares').value,
+      moldes:    document.getElementById('moldes').value,
+      dg:        document.getElementById('dg').value,
+      seisuno:   document.getElementById('seisuno').value,
+      gs:        document.getElementById('gs').value,
+      referencias: refs
+    };
+
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  }
+
+  function cargarBorrador() {
+    var saved = localStorage.getItem(DRAFT_KEY);
+    if (!saved) return;
+    var draft = JSON.parse(saved);
+    if (!draft) return;
+
+    cargando = true;
+
+    document.getElementById('draftBanner').classList.add('visible');
+
+    if (draft.sector) setSector(draft.sector);
+    if (draft.fecha)  document.getElementById('fecha').value = draft.fecha;
+    if (draft.nombre) document.getElementById('nombre').value = draft.nombre;
+    if (draft.premolares) document.getElementById('premolares').value = draft.premolares;
+    if (draft.moldes)     document.getElementById('moldes').value = draft.moldes;
+    if (draft.dg)         document.getElementById('dg').value = draft.dg;
+    if (draft.seisuno)    document.getElementById('seisuno').value = draft.seisuno;
+    if (draft.gs)         document.getElementById('gs').value = draft.gs;
+
+    if (draft.referencias && draft.referencias.length > 0) {
+      draft.referencias.forEach(function(ref) { agregarReferencia(ref); });
+    }
+
+    cargando = false;
+    guardarBorrador();
+  }
+
+  function borrarBorrador() {
+    localStorage.removeItem(DRAFT_KEY);
+    document.getElementById('draftBanner').classList.remove('visible');
+    resetFormulario();
+  }
+  // ─────────────────────────────────────────────────
+
+  function enviarFormulario() {
+    var fecha   = document.getElementById('fecha').value;
+    var nombre  = document.getElementById('nombre').value;
+    var sector  = document.getElementById('sector').value;
+    var premolares = document.getElementById('premolares').value;
+    var moldes  = document.getElementById('moldes').value;
+    var dg      = document.getElementById('dg').value;
+    var seisuno = document.getElementById('seisuno').value;
+    var gs      = document.getElementById('gs').value;
+
+    if (!fecha || !nombre) { alert('Por favor completa fecha y nombre.'); return; }
+
+    var btnEnviar = document.getElementById('btnEnviar');
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = 'Enviando...';
+
+    var referencias = [];
+    document.querySelectorAll('.ref-item').forEach(function(item, idx) {
+      var grid = item.querySelector('[id^="grid_"]');
+      if (!grid) return;
+      var refId = grid.id.replace('grid_', '');
+      var nameInput  = document.getElementById('refName_' + refId);
+      var comentario = document.getElementById('comentario_' + refId);
+      var tipoBtn    = item.querySelector('.tipo-btn.selected');
+      var marked = Array.from(grid.querySelectorAll('.num-cell.marked')).map(function(c) { return parseInt(c.dataset.num); });
+      referencias.push({
+        nombre:     nameInput  ? (nameInput.value.trim() || ('Referencia ' + (idx+1))) : ('Referencia ' + (idx+1)),
+        cavidades:  marked,
+        comentario: comentario ? comentario.value.trim() : '',
+        tipo:       tipoBtn    ? tipoBtn.dataset.tipo : ''
+      });
+    });
+
+    var payload = {
+      fecha:     fecha,
+      nombre:    nombre,
+      sector:    sector,
+      premoldes: parseInt(premolares) || 0,
+      moldes:    parseInt(moldes) || 0,
+      dg:        parseInt(dg) || 0,
+      seisuno:   parseInt(seisuno) || 0,
+      gs:        parseInt(gs) || 0,
+      referencias: referencias
+    };
+
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      mode: 'no-cors'
+    })
+    .then(function() {
+      borrarBorrador();
+      mostrarToast();
+      resetFormulario();
+    })
+    .catch(function() {
+      alert('Error de conexion, verifica tu internet');
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = 'Enviar Formulario';
+    });
+  }
+
+  function resetFormulario() {
+    document.getElementById('premolares').value = '';
+    document.getElementById('moldes').value = '';
+    document.getElementById('dg').value = '';
+    document.getElementById('seisuno').value = '';
+    document.getElementById('gs').value = '';
+    document.getElementById('refsContainer').innerHTML = '';
+    document.getElementById('fecha').valueAsDate = new Date();
+    document.getElementById('btnAgregarRef').disabled = false;
+    var btnEnviar = document.getElementById('btnEnviar');
+    btnEnviar.disabled = false;
+    btnEnviar.textContent = 'Enviar Formulario';
+    refCount = 0;
+    setSector('LINEA');
+    document.getElementById('nombre').value = '';
+  }
+
+  function mostrarToast() {
+    var toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(function() { toast.classList.remove('show'); }, 3000);
+  }
+
+  // Guardar al cambiar nombre y fecha
+  document.getElementById('nombre').addEventListener('change', guardarBorrador);
+  document.getElementById('fecha').addEventListener('change', guardarBorrador);
+
+  // ── BIENVENIDA (máx 3 veces) ─────────────────────
+  var WELCOME_KEY = 'formulario_welcome_count';
+
+  function mostrarBienvenida() {
+    var count = parseInt(localStorage.getItem(WELCOME_KEY) || '0');
+    if (count < 3) {
+      document.getElementById('welcome-modal').classList.remove('hidden');
+      localStorage.setItem(WELCOME_KEY, count + 1);
+    }
+  }
+
+  function cerrarBienvenida() {
+    document.getElementById('welcome-modal').classList.add('hidden');
+  }
+
+  mostrarBienvenida();
+  // ─────────────────────────────────────────────────
+</script>
+</body>
+</html>
