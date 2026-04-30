@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Formulario Moldes</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root { --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --border:#2e3350; --accent:#e8a020; --accent2:#3b82f6; --danger:#ef4444; --success:#22c55e; --text:#e8eaf0; --muted:#7a7f9a; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;padding:24px 16px 80px;}
+header{text-align:center;margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid var(--accent);}
+header h1{font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);}
+header p{color:var(--muted);font-size:.85rem;margin-top:4px;letter-spacing:.05em;text-transform:uppercase;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:20px;max-width:700px;margin-left:auto;margin-right:auto;}
+.ct{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.ct::after{content:'';flex:1;height:1px;background:var(--border);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.f{display:flex;flex-direction:column;gap:6px;}
+.f label{font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.f input,.f select{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Barlow',sans-serif;font-size:1rem;padding:10px 12px;outline:none;width:100%;}
+.f input:focus,.f select:focus{border-color:var(--accent);}
+.f select option{background:var(--surface2);}
+.resumen{margin-top:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:none;}
+.resumen.vis{display:block;}
+.resumen-t{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.rgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;}
+.ritem label{display:block;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+.ritem span{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text);}
+.rmsg{color:var(--muted);font-size:.8rem;text-align:center;padding:4px 0;}
+.mobtns{display:flex;gap:12px;margin-bottom:16px;}
+.mobtn{flex:1;padding:12px;background:var(--surface2);border:2px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;}
+.mobtn.on{border-color:var(--accent2);color:var(--accent2);background:rgba(59,130,246,.08);}
+.cant-disabled input{background:var(--surface) !important;color:var(--accent) !important;font-weight:700;cursor:not-allowed;border-color:var(--border) !important;}
+.fondos-card{display:none;margin-top:20px;}
+.fondos-card.vis{display:block;}
+.sbtns{display:flex;gap:12px;}
+.sbtn{flex:1;padding:14px;background:var(--surface2);border:2px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;}
+.sbtn.on{border-color:var(--accent);color:var(--accent);background:rgba(232,160,32,.08);}
+.dbanner{max-width:700px;margin:0 auto 16px;background:rgba(232,160,32,.1);border:1px solid var(--accent);border-radius:8px;padding:10px 16px;font-size:.85rem;color:var(--accent);display:none;align-items:center;justify-content:space-between;gap:12px;}
+.dbanner.vis{display:flex;}
+.dbtn{background:none;border:1px solid var(--accent);border-radius:4px;color:var(--accent);cursor:pointer;font-size:.75rem;padding:3px 8px;}
+.rcon{max-width:700px;margin:0 auto 0;}
+.ritem2{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+.rhdr{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.rnum{background:var(--accent);color:#000;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;padding:2px 8px;border-radius:4px;white-space:nowrap;}
+.rname{flex:1;min-width:80px;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:600;padding:4px 0;outline:none;text-transform:uppercase;}
+.rname::placeholder{color:var(--muted);}
+.tipos{display:flex;gap:4px;flex-wrap:wrap;}
+.tbtn{background:transparent;border:1px solid var(--border);border-radius:4px;color:rgba(122,127,154,.6);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;padding:3px 5px;}
+.tbtn.on{border-color:var(--accent);color:var(--accent);background:rgba(232,160,32,.1);}
+.xbtn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:4px;}
+.rbody{padding:14px 16px;overflow:hidden;}
+.glbl{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.ngrid{display:grid;grid-template-columns:repeat(var(--cols,10),1fr);gap:4px;}
+.nc{aspect-ratio:1;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--muted);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:600;display:flex;align-items:center;justify-content:center;user-select:none;}
+.nc:hover{border-color:var(--accent);color:var(--text);}
+.nc.mk{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
+.msm{margin-top:8px;margin-bottom:12px;font-size:.8rem;color:var(--muted);min-height:18px;}
+.msm span{color:var(--accent);font-weight:600;}
+.ca{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.9rem;padding:10px 12px;outline:none;width:100%;min-height:70px;resize:vertical;}
+.ca::placeholder{color:var(--muted);}
+.addbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:transparent;border:2px dashed var(--border);border-radius:10px;color:var(--accent2);font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
+.addbtn:disabled{opacity:.4;cursor:not-allowed;}
+.subbtn{display:block;width:100%;padding:16px;background:var(--accent);border:none;border-radius:10px;color:#000;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}
+.subbtn:disabled{opacity:.5;cursor:not-allowed;}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--success);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;padding:12px 28px;border-radius:8px;transition:transform .3s;z-index:999;pointer-events:none;}
+#toast.vis{transform:translateX(-50%) translateY(0);}
+#cfgbtn{position:fixed;bottom:24px;right:24px;width:44px;height:44px;background:var(--surface);border:1px solid var(--border);border-radius:50%;color:var(--muted);font-size:1.2rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;}
+#cfgpanel{position:fixed;bottom:80px;right:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;width:220px;z-index:100;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+#cfgpanel.open{display:block;}
+.cft{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.cfrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cflbl{font-size:.8rem;color:var(--muted);}
+.szbtns{display:flex;align-items:center;gap:8px;}
+.szbtn{width:28px;height:28px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:1rem;cursor:pointer;}
+#szdsp{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;color:var(--text);min-width:24px;text-align:center;}
+#colorin{width:36px;height:28px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;padding:2px;}
+.rstbtn{width:100%;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;text-transform:uppercase;cursor:pointer;margin-top:4px;}
+#certmodal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:9998;padding:16px;}
+#certmodal.h{display:none;}
+#certmodal img{max-width:100%;max-height:90vh;border-radius:8px;}
+#certbtn{position:fixed;bottom:24px;left:24px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:10px 14px;z-index:100;}
+#certbtn:hover{border-color:var(--accent);color:var(--accent);}
+#wmodal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px;}
+#wmodal.h{display:none;}
+.wbox{background:var(--surface);border:1px solid var(--accent);border-radius:14px;padding:28px 24px;max-width:380px;width:100%;}
+.wbox h2{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;}
+.wbox p{font-size:.92rem;color:var(--text);line-height:1.6;margin-bottom:10px;}
+.wbox small{font-size:.82rem;color:var(--muted);display:block;margin-bottom:20px;line-height:1.5;}
+.wokbtn{display:block;width:100%;padding:12px;background:var(--accent);border:none;border-radius:8px;color:#000;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;cursor:pointer;}
+@media(max-width:480px){.g2{grid-template-columns:1fr 1fr;} .sbtns{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<div id="certmodal" class="h" onclick="document.getElementById('certmodal').classList.add('h')">
+  <img src="https://jesusdpescas.github.io/Formulario-Moldes/CERTIFICACION.png" alt="Certificacion"/>
+</div>
+
+<button id="certbtn" onclick="document.getElementById('certmodal').classList.remove('h')">Ver certificacion</button>
+
+<div id="wmodal" class="h">
+  <div class="wbox">
+    <h2>Bienvenido</h2>
+    <p style="font-size:.9rem;line-height:1.7;color:var(--text);">Al enviar este formulario, doy consentimiento de que los datos suministrados son verídicos y confirmo que el equipo inspeccionado cumple con los requisitos de certificación establecidos.</p>
+    <p style="font-size:.82rem;color:var(--muted);margin-top:8px;">Puedes consultar los criterios de certificacion en el boton <strong style="color:var(--accent);">VER CERTIFICACION</strong> en la parte inferior izquierda.</p>
+    <button class="wokbtn" onclick="cerrarModal()">Entendido</button>
+  </div>
+</div>
+
+<header>
+  <h1>Inspeccion de Moldes</h1>
+  <p>Registro de cavidades - O-I Manufacturing</p>
+</header>
+
+<div class="card" style="max-width:700px;margin:0 auto 20px;">
+  <div class="ct">Modo de ingreso</div>
+  <div class="mobtns">
+    <button type="button" class="mobtn on" id="btnAuto" onclick="setModo('auto')">Automatico</button>
+    <button type="button" class="mobtn" id="btnManual" onclick="setModo('manual')">Manual</button>
+  </div>
+  <div id="modoDesc" style="font-size:.82rem;color:var(--muted);line-height:1.5;">
+    <strong style="color:var(--text);">Manual:</strong> Ingresa las cantidades directamente. El tipo de cada referencia es opcional.<br>
+    <strong style="color:var(--text);">Automatico:</strong> Las cantidades se calculan solas segun las cavidades marcadas en cada referencia. Debes indicar el tipo (PRE, MOL, DG, 6 1/4, GS) en cada referencia.
+  </div>
+</div>
+<input type="hidden" id="modo" value="auto"/>
+
+<div class="dbanner" id="dbanner">
+  Borrador guardado restaurado
+  <button class="dbtn" onclick="limpiarBorrador()">Limpiar</button>
+</div>
+
+<div class="card">
+  <div class="ct">Sector</div>
+  <div class="sbtns">
+    <button type="button" class="sbtn on" id="btnL" onclick="setSector('LINEA')">Linea</button>
+    <button type="button" class="sbtn" id="btnA" onclick="setSector('AJUSTADORES')">Ajustador</button>
+  </div>
+  <input type="hidden" id="sector" value="LINEA"/>
+</div>
+
+<div class="card">
+  <div class="ct">Datos generales</div>
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="f"><label>Fecha</label><input type="date" id="fecha" oninput="saveDraft()"/></div>
+    <div class="f"></div>
+  </div>
+  <div class="f"><label>Nombre</label>
+    <select id="nombre" onchange="onNombre()">
+      <option value="">-- Selecciona tu nombre --</option>
+    </select>
+  </div>
+  <div class="resumen" id="resumen">
+    <div class="resumen-t" id="restit">Semana actual</div>
+    <div id="rescont" class="rmsg">Cargando...</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="ct">Cantidades</div>
+  <div style="display:flex;flex-direction:column;gap:14px;">
+    <div class="f"><label>Premoldes</label><input type="number" id="pre" min="0" placeholder="0" oninput="saveDraft()"/></div>
+    <div class="f"><label>Moldes</label><input type="number" id="mol" min="0" placeholder="0" oninput="saveDraft()"/></div>
+    <div class="f"><label>DG</label><input type="number" id="dg" min="0" placeholder="0" oninput="saveDraft()"/></div>
+    <div class="f"><label>6 1/4</label><input type="number" id="sei" min="0" placeholder="0" oninput="saveDraft()"/></div>
+    <div class="f"><label>GS</label><input type="number" id="gs" min="0" placeholder="0" oninput="saveDraft()"/></div>
+  </div>
+</div>
+
+<div class="rcon" id="rcon"></div>
+
+<div class="card fondos-card" id="fondosCard">
+  <div class="ct">Fondos</div>
+  <div class="f"><label>Cantidad de fondos del dia</label>
+    <input type="number" id="fondos" min="0" placeholder="0" oninput="saveDraft()"/>
+  </div>
+</div>
+
+<div style="max-width:700px;margin:0 auto 20px;padding:0 0;">
+  <button type="button" class="addbtn" id="addbtn" onclick="addRef(null)" style="width:100%;margin:0 0 20px;">+ Agregar Referencia</button>
+  <button type="button" class="subbtn" id="subbtn" onclick="enviar()" style="width:100%;">Enviar Formulario</button>
+</div>
+<div id="toast">Formulario enviado</div>
+
+<button type="button" id="cfgbtn" onclick="toggleCfg()">&#9881;</button>
+<div id="cfgpanel">
+  <div class="cft">Configuracion</div>
+  <div class="cfrow"><span class="cflbl">Tamano celda</span>
+    <div class="szbtns">
+      <button type="button" class="szbtn" onclick="chgSz(-1)">-</button>
+      <span id="szdsp">XS</span>
+      <button type="button" class="szbtn" onclick="chgSz(1)">+</button>
+    </div>
+  </div>
+  <div class="cfrow"><span class="cflbl">Color celdas</span>
+    <input type="color" id="colorin" value="#22263a" oninput="chgColor(this.value)"/>
+  </div>
+  <button type="button" class="rstbtn" onclick="resetCfg()">Restablecer</button>
+</div>
+
+<script>
+var NOMBRES = {
+  LINEA: ['John Castaneda','Nelson Mantilla','Luis Miguel','Brayan Garcia','Brayan Vanegas','Manuel Bello'],
+  AJUSTADORES: ['Jose Malaver','Daniel Cardenas','Ivan Salgado','Leandro','Jose Albino','Alexander Toro','Jose Mancipe','Donny Forero','Miguel Cordero','Daniel Olaya','Jhonatan Pinzon']
+};
+var TIPOS = ['PRE','MOL','DG','6 1/4','GS'];
+var HOOK = 'https://script.google.com/macros/s/AKfycbwG5DbbRLFGoBXA5Ehw8uCGp5VfM-Og93X9RDmoBDjlbmZdAGtzeqbmGTSoYFA5BwLr/exec';
+var CSV = 'https://script.google.com/macros/s/AKfycbwG5DbbRLFGoBXA5Ehw8uCGp5VfM-Og93X9RDmoBDjlbmZdAGtzeqbmGTSoYFA5BwLr/exec';
+var DK = 'md2', CK = 'mc2', WK = 'mw2';
+var MAX = 12, rc = 0, loading = false;
+var SZ = [10,8,7,6,5], SZL = ['XS','S','M','L','XL'], szi = 0, clr = '#22263a';
+
+// INIT
+document.getElementById('fecha').valueAsDate = new Date();
+loadNames('LINEA');
+loadCfg();
+loadDraft();
+showWelcome();
+
+document.addEventListener('click', function(e) {
+  var p = document.getElementById('cfgpanel'), b = document.getElementById('cfgbtn');
+  if (p && b && !p.contains(e.target) && !b.contains(e.target)) p.classList.remove('open');
+});
+
+// SECTOR
+function setSector(v) {
+  document.getElementById('sector').value = v;
+  document.getElementById('btnL').classList.toggle('on', v === 'LINEA');
+  document.getElementById('btnA').classList.toggle('on', v === 'AJUSTADORES');
+  loadNames(v);
+  // Show fondos only for LINEA
+  var fondosCard = document.getElementById('fondosCard');
+  if(v === 'LINEA') fondosCard.classList.add('vis');
+  else { fondosCard.classList.remove('vis'); document.getElementById('fondos').value = ''; }
+  if (!loading) saveDraft();
+}
+
+function loadNames(sector) {
+  var sel = document.getElementById('nombre'), cur = sel.value;
+  sel.innerHTML = '<option value="">-- Selecciona tu nombre --</option>';
+  NOMBRES[sector].forEach(function(n) {
+    var o = document.createElement('option');
+    o.value = n; o.textContent = n;
+    if (n === cur) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+
+function onNombre() {
+  if (!loading) saveDraft();
+  loadResumen(document.getElementById('nombre').value);
+}
+
+// RESUMEN
+function getLunes() {
+  var d = new Date(), day = d.getDay(), diff = day===0?-6:1-day, l = new Date(d);
+  l.setDate(d.getDate()+diff); l.setHours(0,0,0,0); return l;
+}
+function fmt(d) { return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
+
+function loadResumen(nombre) {
+  var box = document.getElementById('resumen');
+  if(!nombre) { box.classList.remove('vis'); return; }
+  box.classList.add('vis');
+  document.getElementById('rescont').innerHTML = '<div class="rmsg">Cargando...</div>';
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', CSV+'?nombre='+encodeURIComponent(nombre)+'&t='+Date.now(), true);
+  xhr.onload = function() {
+    var csv = xhr.responseText;
+    if(!csv || csv.length < 5) {
+      document.getElementById('rescont').innerHTML='<div class="rmsg">Sin datos</div>';
+      return;
+    }
+    // Clean CSV - remove BOM, normalize line endings, remove quotes from headers
+    csv = csv.replace(/^\uFEFF/, ''); csv = csv.replace(/\r/g,'');
+    var rows = csv.split('\n');
+    // Parse headers removing quotes and trimming
+    var h = rows[0].split(',').map(function(x){ return x.trim().replace(/"/g,'').toUpperCase(); });
+    
+    var iN=h.indexOf('NOMBRE'), iF=h.indexOf('FECHA'), iP=h.indexOf('PREMOLDES'),
+        iM=h.indexOf('MOLDES'), iD=h.indexOf('DG'), iS=h.indexOf('6/14'), iG=h.indexOf('GS');
+
+    // Show debug if columns not found
+    if(iN<0||iF<0) {
+      document.getElementById('rescont').innerHTML='<div class="rmsg">Cols: '+h.slice(0,5).join('|')+'</div>';
+      return;
+    }
+
+    var lunes=getLunes(), hoy=new Date(); hoy.setHours(23,59,59,999);
+    var p=0,m=0,d=0,s=0,g=0,ult=null;
+    for(var i=1;i<rows.length;i++){
+      if(!rows[i].trim()) continue;
+      var c=rows[i].split(',');
+      var nFila=(c[iN]||'').trim().replace(/"/g,'');
+      if(!nFila) continue;
+      if(nFila.toLowerCase()!==nombre.toLowerCase()) continue;
+      var fStr=(c[iF]||'').trim().replace(/"/g,'');
+      var f=new Date(fStr);
+      if(isNaN(f.getTime())||f<lunes||f>hoy) continue;
+      p+=parseInt(c[iP])||0; m+=parseInt(c[iM])||0; d+=parseInt(c[iD])||0;
+      s+=parseInt(c[iS])||0; g+=parseInt(c[iG])||0;
+      if(!ult||f>ult) ult=f;
+    }
+    document.getElementById('restit').textContent='Semana '+fmt(getLunes())+' - '+fmt(new Date());
+    var h2='<div class="rgrid">';
+    h2+='<div class="ritem"><label>PRE</label><span>'+p+'</span></div>';
+    h2+='<div class="ritem"><label>MOL</label><span>'+m+'</span></div>';
+    h2+='<div class="ritem"><label>DG</label><span>'+d+'</span></div>';
+    h2+='<div class="ritem"><label>6 1/4</label><span>'+s+'</span></div>';
+    h2+='<div class="ritem"><label>GS</label><span>'+g+'</span></div>';
+    h2+='</div><div style="margin-top:8px;font-size:.75rem;color:var(--muted);">'+(ult?'Ultimo: '+fmt(ult):'Sin registros esta semana')+'</div>';
+    document.getElementById('rescont').innerHTML=h2;
+  };
+  xhr.onerror = function(){ document.getElementById('rescont').innerHTML='<div class="rmsg">No se pudo cargar</div>'; };
+  xhr.send();
+}
+
+// REFERENCIAS
+function addRef(data) {
+  var total = document.querySelectorAll('.ritem2').length;
+  if(total>=MAX){alert('Maximo 12 referencias.');return;}
+  rc++;
+  var div=document.createElement('div');
+  div.className='ritem2'; div.id='r'+rc;
+  var tH='<div class="tipos" id="tp'+rc+'">';
+  TIPOS.forEach(function(t){ tH+='<button type="button" class="tbtn" data-t="'+t+'" onclick="selTipo(this,'+rc+')">'+t+'</button>'; });
+  tH+='</div>';
+  div.innerHTML='<div class="rhdr"><span class="rnum">REF '+(total+1)+'</span>'+
+    '<input class="rname" type="text" placeholder="Nombre (ej: 7677)" id="rn'+rc+'" oninput="saveDraft()"/>'+
+    tH+'<button type="button" class="xbtn" onclick="delRef(\'r'+rc+'\')">x</button></div>'+
+    '<div class="rbody"><div class="glbl">Cavidades defectuosas</div>'+
+    '<div class="ngrid" id="ng'+rc+'"></div>'+
+    '<div class="msm" id="ms'+rc+'">Ninguna cavidad marcada</div>'+
+    '<div class="glbl" style="margin-top:4px;">Comentarios</div>'+
+    '<textarea class="ca" id="cm'+rc+'" placeholder="Observaciones..." oninput="saveDraft()"></textarea></div>';
+  document.getElementById('rcon').appendChild(div);
+  var grid=document.getElementById('ng'+rc);
+  for(var i=1;i<=120;i++){
+    var c=document.createElement('div');
+    c.className='nc'; c.textContent=i; c.dataset.n=i;
+    (function(cell,rid){cell.onclick=function(){toggleC(cell,rid);};})(c,rc);
+    grid.appendChild(c);
+  }
+  if(data){
+    if(data.nombre&&document.getElementById('rn'+rc)) document.getElementById('rn'+rc).value=data.nombre;
+    if(data.comentario&&document.getElementById('cm'+rc)) document.getElementById('cm'+rc).value=data.comentario;
+    if(data.tipo){
+      document.querySelectorAll('#tp'+rc+' .tbtn').forEach(function(b){
+        if(b.dataset.t===data.tipo) b.classList.add('on');
+      });
+    }
+    if(data.cavidades&&data.cavidades.length){
+      data.cavidades.forEach(function(n){
+        grid.querySelectorAll('.nc').forEach(function(c){if(parseInt(c.dataset.n)===n)c.classList.add('mk');});
+      });
+      updSum(rc);
+    }
+  }
+  document.getElementById('addbtn').disabled=document.querySelectorAll('.ritem2').length>=MAX;
+}
+
+function selTipo(btn,rid){
+  var all=document.querySelectorAll('#tp'+rid+' .tbtn');
+  var wasOn=btn.classList.contains('on');
+  all.forEach(function(b){b.classList.remove('on');});
+  if(!wasOn) btn.classList.add('on');
+  calcAuto();
+  saveDraft();
+}
+
+function delRef(id){
+  document.getElementById(id).remove();
+  document.getElementById('addbtn').disabled=false;
+  saveDraft();
+}
+
+function toggleC(cell,rid){
+  cell.classList.toggle('mk');
+  updSum(rid);
+  calcAuto();
+  saveDraft();
+}
+
+function updSum(rid){
+  var g=document.getElementById('ng'+rid);
+  var mk=Array.from(g.querySelectorAll('.nc.mk')).map(function(c){return c.dataset.n;});
+  var s=document.getElementById('ms'+rid);
+  s.innerHTML=mk.length===0?'Ninguna cavidad marcada':'<span>'+mk.length+' marcada'+(mk.length>1?'s':'')+':</span> '+mk.join(', ');
+}
+
+// BORRADOR
+function saveDraft(){
+  if(loading) return;
+  var refs=[];
+  document.querySelectorAll('.ritem2').forEach(function(item,idx){
+    var g=item.querySelector('[id^="ng"]'); if(!g) return;
+    var rid=g.id.replace('ng','');
+    var tb=item.querySelector('.tbtn.on');
+    refs.push({
+      nombre:(document.getElementById('rn'+rid)||{}).value||'',
+      comentario:(document.getElementById('cm'+rid)||{}).value||'',
+      tipo:tb?tb.dataset.t:'',
+      cavidades:Array.from(g.querySelectorAll('.nc.mk')).map(function(c){return parseInt(c.dataset.n);})
+    });
+  });
+  try{localStorage.setItem(DK,JSON.stringify({
+    fecha:document.getElementById('fecha').value,
+    nombre:document.getElementById('nombre').value,
+    sector:document.getElementById('sector').value,
+    pre:document.getElementById('pre').value,
+    mol:document.getElementById('mol').value,
+    dg:document.getElementById('dg').value,
+    sei:document.getElementById('sei').value,
+    gs:document.getElementById('gs').value,
+    fondos:document.getElementById('fondos').value,
+    refs:refs
+  }));}catch(e){}
+}
+
+function loadDraft(){
+  var s; try{s=localStorage.getItem(DK);}catch(e){return;}
+  if(!s) return;
+  var d; try{d=JSON.parse(s);}catch(e){return;}
+  if(!d) return;
+  loading=true;
+  document.getElementById('dbanner').classList.add('vis');
+  if(d.sector) setSector(d.sector);
+  if(d.fecha) document.getElementById('fecha').value=d.fecha;
+  if(d.nombre) document.getElementById('nombre').value=d.nombre;
+  if(d.pre) document.getElementById('pre').value=d.pre;
+  if(d.mol) document.getElementById('mol').value=d.mol;
+  if(d.dg) document.getElementById('dg').value=d.dg;
+  if(d.sei) document.getElementById('sei').value=d.sei;
+  if(d.gs) document.getElementById('gs').value=d.gs;
+  if(d.fondos) document.getElementById('fondos').value=d.fondos;
+  if(d.refs&&d.refs.length) d.refs.forEach(function(r){addRef(r);});
+  loading=false;
+  saveDraft();
+}
+
+function limpiarBorrador(){
+  try{localStorage.removeItem(DK);}catch(e){}
+  document.getElementById('dbanner').classList.remove('vis');
+  resetForm();
+}
+
+// ENVIAR
+function setModo(m) {
+  document.getElementById('modo').value = m;
+  document.getElementById('btnManual').classList.toggle('on', m==='manual');
+  document.getElementById('btnAuto').classList.toggle('on', m==='auto');
+  var inputs = document.querySelectorAll('#pre,#mol,#dg,#sei,#gs');
+  var cantCard = document.getElementById('pre').closest('.card');
+  if (m==='auto') {
+    cantCard.classList.add('cant-disabled');
+    inputs.forEach(function(i){ i.readOnly=true; i.value=0; });
+    calcAuto();
+  } else {
+    cantCard.classList.remove('cant-disabled');
+    inputs.forEach(function(i){ i.readOnly=false; });
+  }
+  saveCfg();
+}
+
+function calcAuto() {
+  if(document.getElementById('modo').value !== 'auto') return;
+  var totals = {PRE:0, MOL:0, DG:0, '6 1/4':0, GS:0};
+  document.querySelectorAll('.ritem2').forEach(function(item) {
+    var tb = item.querySelector('.tbtn.on');
+    if(!tb) return;
+    var tipo = tb.dataset.t;
+    var grid = item.querySelector('[id^="ng"]');
+    if(!grid) return;
+    var count = grid.querySelectorAll('.nc.mk').length;
+    if(totals[tipo] !== undefined) totals[tipo] += count;
+  });
+  document.getElementById('pre').value = totals['PRE'] || 0;
+  document.getElementById('mol').value = totals['MOL'] || 0;
+  document.getElementById('dg').value  = totals['DG']  || 0;
+  document.getElementById('sei').value = totals['6 1/4'] || 0;
+  document.getElementById('gs').value  = totals['GS']  || 0;
+}
+
+function enviar(){
+  var fecha=document.getElementById('fecha').value;
+  var nombre=document.getElementById('nombre').value;
+  if(!fecha||!nombre){alert('Completa fecha y nombre.');return;}
+  // Validate tipo in auto mode
+  if(document.getElementById('modo').value === 'auto') {
+    var refs = document.querySelectorAll('.ritem2');
+    if(refs.length === 0) { alert('En modo Automatico debes agregar al menos una referencia.'); return; }
+    var sinTipo = false;
+    refs.forEach(function(item){ if(!item.querySelector('.tbtn.on')) sinTipo=true; });
+    if(sinTipo) { alert('En modo Automatico debes seleccionar el tipo (PRE, MOL, DG, 6 1/4 o GS) en todas las referencias.'); return; }
+  }
+  var p=parseInt(document.getElementById('pre').value)||0;
+  var m=parseInt(document.getElementById('mol').value)||0;
+  var d=parseInt(document.getElementById('dg').value)||0;
+  var s=parseInt(document.getElementById('sei').value)||0;
+  var g=parseInt(document.getElementById('gs').value)||0;
+  if(p+m+d+s+g===0){alert('Ingresa al menos una cantidad.');return;}
+  var btn=document.getElementById('subbtn');
+  btn.disabled=true; btn.textContent='Enviando...';
+  var refs=[];
+  document.querySelectorAll('.ritem2').forEach(function(item,idx){
+    var gr=item.querySelector('[id^="ng"]'); if(!gr) return;
+    var rid=gr.id.replace('ng','');
+    var tb=item.querySelector('.tbtn.on');
+    var ni=document.getElementById('rn'+rid), ci=document.getElementById('cm'+rid);
+    refs.push({
+      nombre:ni?(ni.value.trim()||'Ref '+(idx+1)):'Ref '+(idx+1),
+      cavidades:Array.from(gr.querySelectorAll('.nc.mk')).map(function(c){return parseInt(c.dataset.n);}),
+      comentario:ci?ci.value.trim():'',
+      tipo:tb?tb.dataset.t:''
+    });
+  });
+  var fondos=parseInt(document.getElementById('fondos').value)||0;
+  var payload={fecha:fecha,nombre:nombre,sector:document.getElementById('sector').value,fondos:fondos,
+    premoldes:p,moldes:m,dg:d,seisuno:s,gs:g,referencias:refs};
+  fetch(HOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'no-cors'})
+    .then(function(){
+      try{localStorage.removeItem(DK);}catch(e){}
+      document.getElementById('dbanner').classList.remove('vis');
+      showToast(); resetForm();
+    })
+    .catch(function(){alert('Error de conexion.');btn.disabled=false;btn.textContent='Enviar Formulario';});
+}
+
+function resetForm(){
+  rc=0;
+  document.getElementById('rcon').innerHTML='';
+  document.getElementById('fecha').valueAsDate=new Date();
+  document.getElementById('nombre').value='';
+  document.getElementById('pre').value='';
+  document.getElementById('mol').value='';
+  document.getElementById('dg').value='';
+  document.getElementById('sei').value='';
+  document.getElementById('gs').value='';
+  document.getElementById('fondos').value='';
+  document.getElementById('addbtn').disabled=false;
+  document.getElementById('subbtn').disabled=false;
+  document.getElementById('subbtn').textContent='Enviar Formulario';
+  document.getElementById('resumen').classList.remove('vis');
+  setSector('LINEA');
+  setModo(window._savedModo || 'auto');
+}
+
+function showToast(){
+  var t=document.getElementById('toast');
+  t.classList.add('vis');
+  setTimeout(function(){t.classList.remove('vis');},3000);
+}
+
+// BIENVENIDA
+function showWelcome(){
+  document.getElementById('wmodal').classList.remove('h');
+}
+function cerrarModal(){ document.getElementById('wmodal').classList.add('h'); }
+
+// CONFIG
+function loadCfg(){
+  var s; try{s=localStorage.getItem(CK);}catch(e){return;}
+  if(!s) return;
+  var c; try{c=JSON.parse(s);}catch(e){return;}
+  if(c.szi!==undefined) szi=c.szi;
+  if(c.clr) clr=c.clr;
+  applyCfg();
+  try{
+    document.getElementById('colorin').value=clr;
+    document.getElementById('szdsp').textContent=SZL[szi];
+  }catch(e){}
+}
+
+function saveCfg(){ try{localStorage.setItem(CK,JSON.stringify({szi:szi,clr:clr,modo:document.getElementById('modo').value}));}catch(e){} }
+
+function applyCfg(){
+  document.documentElement.style.setProperty('--cols',SZ[szi]);
+  var st=document.getElementById('dst');
+  if(!st){st=document.createElement('style');st.id='dst';document.head.appendChild(st);}
+  st.textContent='.nc:not(.mk){background:'+clr+' !important;}';
+}
+
+function chgSz(d){
+  szi=Math.max(0,Math.min(4,szi+d));
+  document.getElementById('szdsp').textContent=SZL[szi];
+  applyCfg(); saveCfg();
+}
+
+function chgColor(v){ clr=v; applyCfg(); saveCfg(); }
+
+function resetCfg(){
+  szi=0; clr='#22263a';
+  document.getElementById('colorin').value=clr;
+  document.getElementById('szdsp').textContent=SZL[szi];
+  applyCfg(); saveCfg();
+}
+
+function toggleCfg(){ document.getElementById('cfgpanel').classList.toggle('open'); }
+</script>
+</body>
+</html>
