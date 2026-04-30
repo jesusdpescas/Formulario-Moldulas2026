@@ -32,7 +32,7 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px;letter-spacing:.05em
 .mobtn{flex:1;padding:12px;background:var(--surface2);border:2px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;}
 .mobtn.on{border-color:var(--accent2);color:var(--accent2);background:rgba(59,130,246,.08);}
 .cant-disabled input{background:var(--surface) !important;color:var(--accent) !important;font-weight:700;cursor:not-allowed;border-color:var(--border) !important;}
-.fondos-card{display:none;}
+.fondos-card{display:none;margin-top:20px;}
 .fondos-card.vis{display:block;}
 .sbtns{display:flex;gap:12px;}
 .sbtn{flex:1;padding:14px;background:var(--surface2);border:2px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;}
@@ -40,7 +40,7 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px;letter-spacing:.05em
 .dbanner{max-width:700px;margin:0 auto 16px;background:rgba(232,160,32,.1);border:1px solid var(--accent);border-radius:8px;padding:10px 16px;font-size:.85rem;color:var(--accent);display:none;align-items:center;justify-content:space-between;gap:12px;}
 .dbanner.vis{display:flex;}
 .dbtn{background:none;border:1px solid var(--accent);border-radius:4px;color:var(--accent);cursor:pointer;font-size:.75rem;padding:3px 8px;}
-.rcon{max-width:700px;margin:0 auto 20px;}
+.rcon{max-width:700px;margin:0 auto 0;}
 .ritem2{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
 .rhdr{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);flex-wrap:wrap;}
 .rnum{background:var(--accent);color:#000;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.75rem;padding:2px 8px;border-radius:4px;white-space:nowrap;}
@@ -77,6 +77,11 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px;letter-spacing:.05em
 #szdsp{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;color:var(--text);min-width:24px;text-align:center;}
 #colorin{width:36px;height:28px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;padding:2px;}
 .rstbtn{width:100%;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;text-transform:uppercase;cursor:pointer;margin-top:4px;}
+#certmodal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:9998;padding:16px;}
+#certmodal.h{display:none;}
+#certmodal img{max-width:100%;max-height:90vh;border-radius:8px;}
+#certbtn{position:fixed;bottom:24px;left:24px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:10px 14px;z-index:100;}
+#certbtn:hover{border-color:var(--accent);color:var(--accent);}
 #wmodal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px;}
 #wmodal.h{display:none;}
 .wbox{background:var(--surface);border:1px solid var(--accent);border-radius:14px;padding:28px 24px;max-width:380px;width:100%;}
@@ -89,14 +94,17 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px;letter-spacing:.05em
 </head>
 <body>
 
+<div id="certmodal" class="h" onclick="document.getElementById('certmodal').classList.add('h')">
+  <img src="https://jesusdpescas.github.io/Formulario-Moldes/CERTIFICACION.png" alt="Certificacion"/>
+</div>
+
+<button id="certbtn" onclick="document.getElementById('certmodal').classList.remove('h')">Ver certificacion</button>
+
 <div id="wmodal" class="h">
   <div class="wbox">
     <h2>Bienvenido</h2>
-    <p>Tu progreso se guarda automaticamente. Si cierras la pagina puedes volver y continuar donde lo dejaste.</p>
-    <small>
-      <strong style="color:var(--accent);">Modo Manual:</strong> Ingresa las cantidades directamente arriba.<br><br>
-      <strong style="color:var(--accent);">Modo Automatico:</strong> Las cantidades se calculan solas contando las cavidades marcadas en cada referencia. Debes seleccionar el tipo de cada referencia (PRE, MOL, DG, 6 1/4 o GS) usando los botones del encabezado.
-    </small>
+    <p style="font-size:.9rem;line-height:1.7;color:var(--text);">Al enviar este formulario, doy consentimiento de que los datos suministrados son verídicos y confirmo que el equipo inspeccionado cumple con los requisitos de certificación establecidos.</p>
+    <p style="font-size:.82rem;color:var(--muted);margin-top:8px;">Puedes consultar los criterios de certificacion en el boton <strong style="color:var(--accent);">VER CERTIFICACION</strong> en la parte inferior izquierda.</p>
     <button class="wokbtn" onclick="cerrarModal()">Entendido</button>
   </div>
 </div>
@@ -113,7 +121,7 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px;letter-spacing:.05em
     <button type="button" class="mobtn" id="btnManual" onclick="setModo('manual')">Manual</button>
   </div>
   <div id="modoDesc" style="font-size:.82rem;color:var(--muted);line-height:1.5;">
-    <strong style="color:var(--text);">Manual:</strong> Ingresa las cantidades directamente. Las referencias son opcionales.<br>
+    <strong style="color:var(--text);">Manual:</strong> Ingresa las cantidades directamente. El tipo de cada referencia es opcional.<br>
     <strong style="color:var(--text);">Automatico:</strong> Las cantidades se calculan solas segun las cavidades marcadas en cada referencia. Debes indicar el tipo (PRE, MOL, DG, 6 1/4, GS) en cada referencia.
   </div>
 </div>
@@ -194,8 +202,8 @@ header p{color:var(--muted);font-size:.85rem;margin-top:4px;letter-spacing:.05em
 
 <script>
 var NOMBRES = {
-  LINEA: ['John Castaneda','Nelson Mantilla','Luis Miguel','Brayan Garcia','Jorge Quintana','Brayan Vanegas','Manuel Bello'],
-  AJUSTADORES: ['Jose Malaver','Daniel Cardenas','Ivan Salgado','Leandro','Jose Albino','Alexander Toro','Jose Mancipe','Donny Vargas','Miguel Cordero','Daniel Olaya','Jhonatan Pinzon']
+  LINEA: ['John Castaneda','Nelson Mantilla','Luis Miguel','Brayan Garcia','Brayan Vanegas','Manuel Bello'],
+  AJUSTADORES: ['Jose Malaver','Daniel Cardenas','Ivan Salgado','Leandro','Jose Albino','Alexander Toro','Jose Mancipe','Donny Forero','Miguel Cordero','Daniel Olaya','Jhonatan Pinzon']
 };
 var TIPOS = ['PRE','MOL','DG','6 1/4','GS'];
 var HOOK = 'https://script.google.com/macros/s/AKfycbwG5DbbRLFGoBXA5Ehw8uCGp5VfM-Og93X9RDmoBDjlbmZdAGtzeqbmGTSoYFA5BwLr/exec';
@@ -258,7 +266,7 @@ function loadResumen(nombre) {
   box.classList.add('vis');
   document.getElementById('rescont').innerHTML = '<div class="rmsg">Cargando...</div>';
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', CSV+'&t='+Date.now(), true);
+  xhr.open('GET', CSV+'?nombre='+encodeURIComponent(nombre)+'&t='+Date.now(), true);
   xhr.onload = function() {
     var csv = xhr.responseText;
     if(!csv || csv.length < 5) {
@@ -266,7 +274,7 @@ function loadResumen(nombre) {
       return;
     }
     // Clean CSV - remove BOM, normalize line endings, remove quotes from headers
-    csv = csv.replace(/^/, '');
+    csv = csv.replace(/^\uFEFF/, ''); csv = csv.replace(/\r/g,'');
     var rows = csv.split('\n');
     // Parse headers removing quotes and trimming
     var h = rows[0].split(',').map(function(x){ return x.trim().replace(/"/g,'').toUpperCase(); });
@@ -444,7 +452,7 @@ function setModo(m) {
   document.getElementById('btnManual').classList.toggle('on', m==='manual');
   document.getElementById('btnAuto').classList.toggle('on', m==='auto');
   var inputs = document.querySelectorAll('#pre,#mol,#dg,#sei,#gs');
-  var cantCard = document.querySelector('.cant-disabled') || document.getElementById('pre').closest('.card');
+  var cantCard = document.getElementById('pre').closest('.card');
   if (m==='auto') {
     cantCard.classList.add('cant-disabled');
     inputs.forEach(function(i){ i.readOnly=true; i.value=0; });
@@ -453,6 +461,7 @@ function setModo(m) {
     cantCard.classList.remove('cant-disabled');
     inputs.forEach(function(i){ i.readOnly=false; });
   }
+  saveCfg();
 }
 
 function calcAuto() {
@@ -535,6 +544,7 @@ function resetForm(){
   document.getElementById('subbtn').textContent='Enviar Formulario';
   document.getElementById('resumen').classList.remove('vis');
   setSector('LINEA');
+  setModo(window._savedModo || 'auto');
 }
 
 function showToast(){
@@ -545,11 +555,7 @@ function showToast(){
 
 // BIENVENIDA
 function showWelcome(){
-  var c; try{c=parseInt(localStorage.getItem(WK)||'0');}catch(e){c=3;}
-  if(c<3){
-    document.getElementById('wmodal').classList.remove('h');
-    try{localStorage.setItem(WK,c+1);}catch(e){}
-  }
+  document.getElementById('wmodal').classList.remove('h');
 }
 function cerrarModal(){ document.getElementById('wmodal').classList.add('h'); }
 
@@ -561,8 +567,10 @@ function loadCfg(){
   if(c.szi!==undefined) szi=c.szi;
   if(c.clr) clr=c.clr;
   applyCfg();
-  try{document.getElementById('colorin').value=clr;
-  document.getElementById('szdsp').textContent=SZL[szi];}catch(e){}
+  try{
+    document.getElementById('colorin').value=clr;
+    document.getElementById('szdsp').textContent=SZL[szi];
+  }catch(e){}
 }
 
 function saveCfg(){ try{localStorage.setItem(CK,JSON.stringify({szi:szi,clr:clr,modo:document.getElementById('modo').value}));}catch(e){} }
