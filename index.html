@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Inspección Torno – O-I</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg: #12131f;
+  --card: #1c1e2e;
+  --card2: #22253a;
+  --border: #2c3050;
+  --accent: #f5a623;
+  --accent-dim: rgba(245,166,35,0.12);
+  --text: #e8eaf0;
+  --muted: #6b7299;
+  --green: #2ecc71;
+  --red: #e74c3c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding-bottom: 80px;
+}
+
+/* MODAL */
+#modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 24px;
+}
+.modal-inner {
+  background: var(--card); border: 1px solid var(--accent);
+  border-radius: 16px; padding: 28px 24px; max-width: 400px; width: 100%;
+}
+.modal-inner h2 {
+  font-size: 18px; font-weight: 700; color: var(--accent);
+  margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;
+}
+.modal-inner p { font-size: 13px; color: #aab; line-height: 1.65; margin-bottom: 24px; }
+.modal-inner button {
+  width: 100%; background: var(--accent); color: #000;
+  border: none; padding: 14px; border-radius: 10px;
+  font-size: 15px; font-weight: 700; cursor: pointer; text-transform: uppercase;
+}
+
+/* DRAFT BANNER */
+#draftBanner {
+  background: var(--accent-dim); border-bottom: 1px solid var(--accent);
+  padding: 11px 18px; display: flex; align-items: center; justify-content: space-between;
+}
+#draftBanner.hidden { display: none; }
+#draftBanner span { font-size: 13px; color: var(--accent); font-weight: 500; }
+#draftBanner button {
+  background: none; border: 1px solid var(--accent); color: var(--accent);
+  padding: 5px 13px; border-radius: 6px; font-size: 12px;
+  font-weight: 600; cursor: pointer; text-transform: uppercase;
+}
+
+/* SECTIONS */
+.section {
+  margin: 12px 14px 0; background: var(--card);
+  border-radius: 14px; overflow: hidden; border: 1px solid var(--border);
+}
+.section-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--accent);
+  padding: 14px 16px 10px; border-bottom: 1px solid var(--border);
+}
+
+/* FIELDS */
+.field { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.field:last-child { border-bottom: none; }
+.field label {
+  display: block; font-size: 10px; font-weight: 700;
+  color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 7px;
+}
+.field input[type="date"], .field select {
+  width: 100%; background: var(--card2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--text); padding: 12px 14px;
+  font-family: 'Inter', sans-serif; font-size: 15px;
+  outline: none; appearance: none; -webkit-appearance: none;
+}
+.field input[type="date"]:focus, .field select:focus { border-color: var(--accent); }
+.field select option { background: var(--card2); }
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '⌄'; position: absolute; right: 14px; top: 50%;
+  transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 18px;
+}
+
+/* TORNO BADGE */
+.torno-badge {
+  margin: 14px 14px 0; background: var(--accent-dim);
+  border: 1px solid var(--accent); border-radius: 14px; padding: 12px 16px;
+}
+.torno-badge .lbl { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+.torno-badge .val { font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: 3px; margin-top: 2px; }
+
+/* SUMMARY */
+.summary-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; padding: 12px 14px 14px;
+}
+.sum-block {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px;
+}
+.sum-block-title {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+}
+.sum-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3px 0; border-bottom: 1px solid var(--border);
+}
+.sum-row:last-child { border-bottom: none; }
+.sum-row .k { font-size: 11px; color: var(--muted); }
+.sum-row .v { font-size: 14px; font-weight: 700; color: var(--accent); }
+.sum-single {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sum-single .k { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.sum-single .v { font-size: 24px; font-weight: 700; color: var(--accent); }
+
+/* CATEGORY ACCORDION */
+.cat-wrap { margin: 12px 14px 0; }
+.cat-btn {
+  width: 100%; background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; color: var(--text); padding: 16px 18px;
+  font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: border-color .2s, background .2s;
+}
+.cat-btn.open {
+  border-color: var(--accent); background: var(--accent-dim);
+  border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+}
+.cat-btn .cat-right { display: flex; align-items: center; gap: 8px; }
+.cat-count {
+  font-size: 13px; color: var(--accent); font-weight: 700;
+  background: var(--bg); border: 1px solid var(--accent);
+  padding: 3px 10px; border-radius: 6px;
+}
+.cat-arrow { font-size: 18px; color: var(--muted); transition: transform .25s; }
+.cat-btn.open .cat-arrow { transform: rotate(180deg); color: var(--accent); }
+.cat-body {
+  background: var(--card); border: 1px solid var(--accent);
+  border-top: none; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
+  display: none; padding: 14px;
+}
+.cat-body.open { display: block; }
+
+/* REFERENCE CARDS */
+.ref-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+}
+.ref-header {
+  background: var(--card2); padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border);
+}
+.ref-badge {
+  background: var(--accent); color: #000; font-size: 11px; font-weight: 800;
+  padding: 4px 9px; border-radius: 6px; letter-spacing: 1px; flex-shrink: 0;
+}
+.ref-header input[type="text"] {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); padding: 7px 11px;
+  font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+}
+.ref-header input[type="text"]:focus { border-color: var(--accent); }
+.btn-x {
+  background: none; border: 1px solid #444; color: var(--muted);
+  width: 30px; height: 30px; border-radius: 7px; cursor: pointer;
+  font-size: 17px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.btn-x:hover { border-color: var(--red); color: var(--red); }
+
+/* SUB-TYPE PILLS */
+.sub-pills {
+  display: flex; gap: 6px; padding: 9px 12px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border); background: var(--card2);
+}
+.sub-pill {
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-size: 11px; font-weight: 700;
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+  transition: all .15s; text-transform: uppercase;
+}
+.sub-pill.active { background: var(--accent); border-color: var(--accent); color: #000; }
+
+/* GRID */
+.grid-area { padding: 12px; }
+.grid-label {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+}
+.cavity-grid {
+  display: grid; grid-template-columns: repeat(10, 1fr);
+  gap: 3px; margin-bottom: 8px;
+}
+.cell {
+  aspect-ratio: 1; background: var(--card2); border: 1px solid var(--border);
+  border-radius: 5px; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--muted); cursor: pointer;
+  user-select: none; transition: all .1s; font-weight: 500;
+}
+.cell:active { transform: scale(0.88); }
+.cell.on { color: #000; font-weight: 800; border-color: transparent; }
+.cell.radio-on {
+  background: var(--accent) !important; color: #000 !important;
+  font-weight: 800; border-color: transparent; transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(245,166,35,0.5);
+}
+
+.marked-count { font-size: 12px; color: var(--accent); font-weight: 700; padding: 2px 0; }
+.marked-list { font-size: 11px; color: var(--muted); line-height: 1.5; word-break: break-all; min-height: 14px; }
+
+/* COMMENT */
+.card-comment { padding: 0 12px 12px; }
+.card-comment input {
+  width: 100%; background: var(--card2); border: 1px solid var(--border);
+  border-radius: 9px; color: var(--text); padding: 10px 13px;
+  font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+}
+.card-comment input:focus { border-color: var(--accent); }
+
+/* RADIO SECTION */
+.radio-qty-display { text-align: center; padding: 8px 0 12px; }
+.radio-qty-display .big-num { font-size: 56px; font-weight: 800; color: var(--accent); line-height: 1; }
+.radio-qty-display .big-label {
+  font-size: 11px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 2px; margin-top: 4px;
+}
+
+/* ADD REF */
+.btn-add {
+  width: 100%; background: none; border: 2px dashed var(--border); color: var(--muted);
+  padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all .2s; margin-top: 4px;
+}
+.btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+/* BOTTOM BAR */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--card); border-top: 1px solid var(--border);
+  display: flex; align-items: stretch; z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.submit-btn {
+  flex: 1; background: none; border: none; border-right: 1px solid var(--border);
+  color: var(--accent); padding: 16px 8px; font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+}
+.submit-btn:active { background: var(--accent-dim); }
+.gear-btn {
+  background: none; border: none; color: var(--muted);
+  padding: 16px 20px; font-size: 20px; cursor: pointer; flex-shrink: 0;
+}
+.gear-btn:active { color: var(--accent); }
+
+/* STATUS */
+#statusMsg {
+  display: none; margin: 12px 14px; padding: 14px 16px;
+  border-radius: 10px; font-size: 14px; font-weight: 600; text-align: center;
+}
+#statusMsg.ok { background: rgba(46,204,113,0.1); border: 1px solid var(--green); color: var(--green); display: block; }
+#statusMsg.err { background: rgba(231,76,60,0.1); border: 1px solid var(--red); color: var(--red); display: block; }
+
+/* SETTINGS PANEL */
+#settingsPanel {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--card); border-top: 2px solid var(--accent);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px 32px;
+  z-index: 200;
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+}
+#settingsPanel.open { transform: translateY(0); }
+.settings-handle {
+  width: 40px; height: 4px; background: var(--border);
+  border-radius: 2px; margin: 0 auto 20px;
+}
+.settings-title {
+  font-size: 11px; font-weight: 700; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px;
+}
+.settings-row {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.settings-row label {
+  font-size: 12px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 1px; font-weight: 600; min-width: 70px;
+}
+.col-btns { display: flex; gap: 6px; flex: 1; }
+.col-btn {
+  flex: 1; background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-size: 13px; font-weight: 700;
+  padding: 10px 0; border-radius: 8px; cursor: pointer;
+  transition: all .15s; font-family: 'Inter', sans-serif;
+}
+.col-btn.active { background: var(--card2); border-color: var(--accent); color: var(--accent); }
+.color-swatch {
+  width: 40px; height: 40px; border: 2px solid var(--border);
+  border-radius: 10px; cursor: pointer; padding: 3px; background: var(--bg);
+}
+#settingsOverlay {
+  display: none; position: fixed; inset: 0; z-index: 199; background: rgba(0,0,0,0.5);
+}
+#settingsOverlay.open { display: block; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div id="modal">
+  <div class="modal-inner">
+    <h2>Formulario de Inspección</h2>
+    <p>Al enviar confirma que la información es verídica y fue inspeccionada personalmente. Los datos quedan registrados en el sistema O-I Manufacturing.</p>
+    <button onclick="closeModal()">Entendido — Continuar</button>
+  </div>
+</div>
+
+<!-- DRAFT BANNER -->
+<div id="draftBanner" class="hidden">
+  <span id="draftMsg">Borrador guardado restaurado</span>
+  <button onclick="clearAll()">Limpiar</button>
+</div>
+
+<!-- SECTOR -->
+<div class="torno-badge">
+  <div class="lbl">Sector</div>
+  <div class="val">TORNO</div>
+</div>
+
+<!-- DATOS GENERALES -->
+<div class="section">
+  <div class="section-title">Datos generales</div>
+  <div class="field">
+    <label>Fecha</label>
+    <input type="date" id="fecha">
+  </div>
+  <div class="field">
+    <label>Nombre</label>
+    <div class="select-wrap">
+      <select id="nombre" onchange="scheduleDraft()">
+        <option value="">— Seleccionar —</option>
+        <option>Jorge Garcia</option>
+        <option>Fran Melo</option>
+        <option>Jonathan Medina</option>
+        <option>Jose Luis</option>
+        <option>Karen Rodriguez</option>
+        <option>Fabio Bolaños</option>
+        <option>Jhon Luna</option>
+        <option>Edwin Lopez</option>
+        <option>Jonathan Pinzon</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- RESUMEN -->
+<div class="section">
+  <div class="section-title">Resumen cantidades</div>
+  <div class="summary-grid" id="summaryGrid"></div>
+</div>
+
+<!-- MOLDES -->
+<div class="cat-wrap">
+  <button class="cat-btn" id="catBtn_MOLDES" onclick="toggleCat('MOLDES')">
+    <span>MOLDES</span>
+    <span class="cat-right">
+      <span class="cat-count" id="catCount_MOLDES">0</span>
+      <span class="cat-arrow">▾</span>
+    </span>
+  </button>
+  <div class="cat-body" id="catBody_MOLDES">
+    <div id="refs_MOLDES"></div>
+    <button class="btn-add" onclick="addRef('MOLDES')">+ Agregar referencia</button>
+  </div>
+</div>
+
+<!-- PREMOLDES -->
+<div class="cat-wrap">
+  <button class="cat-btn" id="catBtn_PREMOLDES" onclick="toggleCat('PREMOLDES')">
+    <span>PREMOLDES</span>
+    <span class="cat-right">
+      <span class="cat-count" id="catCount_PREMOLDES">0</span>
+      <span class="cat-arrow">▾</span>
+    </span>
+  </button>
+  <div class="cat-body" id="catBody_PREMOLDES">
+    <div id="refs_PREMOLDES"></div>
+    <button class="btn-add" onclick="addRef('PREMOLDES')">+ Agregar referencia</button>
+  </div>
+</div>
+
+<!-- ANILLOS -->
+<div class="cat-wrap">
+  <button class="cat-btn" id="catBtn_ANILLOS" onclick="toggleCat('ANILLOS')">
+    <span>ANILLOS</span>
+    <span class="cat-right">
+      <span class="cat-count" id="catCount_ANILLOS">0</span>
+      <span class="cat-arrow">▾</span>
+    </span>
+  </button>
+  <div class="cat-body" id="catBody_ANILLOS">
+    <div class="radio-qty-display">
+      <div class="big-num" id="radioNum_ANILLOS">0</div>
+      <div class="big-label">Anillos</div>
+    </div>
+    <div class="grid-label">Selecciona la cantidad</div>
+    <div class="cavity-grid" id="radioGrid_ANILLOS"></div>
+  </div>
+</div>
+
+<!-- TAPAS -->
+<div class="cat-wrap" style="margin-bottom:14px">
+  <button class="cat-btn" id="catBtn_TAPAS" onclick="toggleCat('TAPAS')">
+    <span>TAPAS</span>
+    <span class="cat-right">
+      <span class="cat-count" id="catCount_TAPAS">0</span>
+      <span class="cat-arrow">▾</span>
+    </span>
+  </button>
+  <div class="cat-body" id="catBody_TAPAS">
+    <div class="radio-qty-display">
+      <div class="big-num" id="radioNum_TAPAS">0</div>
+      <div class="big-label">Tapas</div>
+    </div>
+    <div class="grid-label">Selecciona la cantidad</div>
+    <div class="cavity-grid" id="radioGrid_TAPAS"></div>
+  </div>
+</div>
+
+<div id="statusMsg"></div>
+
+<!-- SETTINGS OVERLAY -->
+<div id="settingsOverlay" onclick="closeSettings()"></div>
+
+<!-- SETTINGS PANEL -->
+<div id="settingsPanel">
+  <div class="settings-handle"></div>
+  <div class="settings-title">⚙ Configuración de grillas</div>
+  <div class="settings-row">
+    <label>Columnas</label>
+    <div class="col-btns">
+      <button class="col-btn" onclick="setGlobalCols(5,this)">5</button>
+      <button class="col-btn" onclick="setGlobalCols(8,this)">8</button>
+      <button class="col-btn active" onclick="setGlobalCols(10,this)">10</button>
+      <button class="col-btn" onclick="setGlobalCols(12,this)">12</button>
+    </div>
+  </div>
+  <div class="settings-row">
+    <label>Color activo</label>
+    <input type="color" class="color-swatch" id="colorActivePicker" value="#f5a623" oninput="setActiveColor(this.value)">
+  </div>
+  <div class="settings-row">
+    <label>Color normal</label>
+    <input type="color" class="color-swatch" id="colorInactivePicker" value="#111111" oninput="setInactiveColor(this.value)">
+  </div>
+  <button onclick="resetSettings()" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);color:var(--muted);padding:12px;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;cursor:pointer;">↺ Restablecer predeterminados</button>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+  <button class="submit-btn" onclick="submitForm()">Enviar registro</button>
+  <button class="gear-btn" onclick="toggleSettings()">⚙</button>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxS3YuseFejR3nuHmBynaVfvkUcXgVWDRuvgs-jnCSFBBmz5lKnt6IUmRhPH5rjlgG6/exec';
+const DRAFT_KEY = 'torno_v2_draft';
+
+const CAT_SUBS = {
+  MOLDES:    ['Cepillado','Diametro','Cuello','Reforma'],
+  PREMOLDES: ['Cuello','Diametro','Registro','Cepillado']
+};
+
+let refs = { MOLDES:[], PREMOLDES:[] };
+let radioVals = { ANILLOS:0, TAPAS:0 };
+let refIdCtr = 0;
+let draftTimer = null;
+let globalCols = 10;
+let globalColorActive = '#f5a623';
+let globalColorInactive = '#111111';
+
+window.onload = () => {
+  document.getElementById('fecha').valueAsDate = new Date();
+  buildSummary();
+  buildRadioGrid('ANILLOS');
+  buildRadioGrid('TAPAS');
+  loadDraft();
+};
+
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+// ACCORDION
+function toggleCat(cat) {
+  const btn = document.getElementById('catBtn_' + cat);
+  const body = document.getElementById('catBody_' + cat);
+  const open = btn.classList.contains('open');
+  btn.classList.toggle('open', !open);
+  body.classList.toggle('open', !open);
+}
+
+// SUMMARY BUILD
+function buildSummary() {
+  const g = document.getElementById('summaryGrid');
+  g.innerHTML = '';
+  ['MOLDES','PREMOLDES'].forEach(cat => {
+    const d = document.createElement('div');
+    d.className = 'sum-block';
+    d.innerHTML = `<div class="sum-block-title">${cat}</div>` +
+      CAT_SUBS[cat].map(s =>
+        `<div class="sum-row"><span class="k">${s}</span><span class="v" id="sub_${cat}_${s}">0</span></div>`
+      ).join('');
+    g.appendChild(d);
+  });
+  ['ANILLOS','TAPAS'].forEach(cat => {
+    const d = document.createElement('div');
+    d.className = 'sum-single';
+    d.innerHTML = `<span class="k">${cat}</span><span class="v" id="sumVal_${cat}">0</span>`;
+    g.appendChild(d);
+  });
+}
+
+// RECALC
+function recalc() {
+  ['MOLDES','PREMOLDES'].forEach(cat => {
+    const totals = {};
+    CAT_SUBS[cat].forEach(s => totals[s] = 0);
+    refs[cat].forEach(r => {
+      if (r.subtipo) totals[r.subtipo] = (totals[r.subtipo]||0) + r.cells.filter(Boolean).length;
+    });
+    let total = 0;
+    CAT_SUBS[cat].forEach(s => {
+      const el = document.getElementById(`sub_${cat}_${s}`);
+      if (el) el.textContent = totals[s];
+      total += totals[s];
+    });
+    const cc = document.getElementById('catCount_' + cat);
+    if (cc) cc.textContent = total;
+  });
+  ['ANILLOS','TAPAS'].forEach(cat => {
+    const v = radioVals[cat];
+    const sv = document.getElementById('sumVal_' + cat);
+    if (sv) sv.textContent = v;
+    const cc = document.getElementById('catCount_' + cat);
+    if (cc) cc.textContent = v;
+  });
+  scheduleDraft();
+}
+
+// RADIO GRIDS
+function buildRadioGrid(cat) {
+  const grid = document.getElementById('radioGrid_' + cat);
+  grid.innerHTML = '';
+  grid.style.gridTemplateColumns = `repeat(${globalCols}, 1fr)`;
+  for (let i = 1; i <= 120; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    c.id = `rc_${cat}_${i}`;
+    c.textContent = i;
+    c.style.background = globalColorInactive;
+    c.style.borderColor = 'transparent';
+    c.style.color = '#888';
+    c.addEventListener('click', () => tapRadio(cat, i));
+    grid.appendChild(c);
+  }
+}
+
+function tapRadio(cat, num) {
+  const prev = radioVals[cat];
+  radioVals[cat] = prev === num ? 0 : num;
+  for (let i = 1; i <= 120; i++) {
+    const c = document.getElementById(`rc_${cat}_${i}`);
+    if (!c) continue;
+    c.classList.remove('radio-on');
+    c.style.background = globalColorInactive;
+    c.style.borderColor = 'transparent';
+    c.style.color = '#888';
+  }
+  if (radioVals[cat] > 0) {
+    const sel = document.getElementById(`rc_${cat}_${radioVals[cat]}`);
+    if (sel) {
+      sel.classList.add('radio-on');
+      sel.style.background = globalColorActive;
+      sel.style.borderColor = globalColorActive;
+      sel.style.color = '#000';
+    }
+  }
+  document.getElementById('radioNum_' + cat).textContent = radioVals[cat];
+  recalc();
+}
+
+function restoreRadio(cat, val) {
+  radioVals[cat] = val;
+  for (let i = 1; i <= 120; i++) {
+    const c = document.getElementById(`rc_${cat}_${i}`);
+    if (!c) continue;
+    c.classList.remove('radio-on');
+    c.style.background = globalColorInactive;
+    c.style.borderColor = 'transparent';
+    c.style.color = '#888';
+  }
+  if (val > 0) {
+    const sel = document.getElementById(`rc_${cat}_${val}`);
+    if (sel) {
+      sel.classList.add('radio-on');
+      sel.style.background = globalColorActive;
+      sel.style.borderColor = globalColorActive;
+      sel.style.color = '#000';
+    }
+  }
+  const rn = document.getElementById('radioNum_' + cat);
+  if (rn) rn.textContent = val;
+}
+
+// REFERENCES
+function addRef(cat) {
+  const id = refIdCtr++;
+  refs[cat].push({ id, nombre:'', subtipo: CAT_SUBS[cat][0], cells: new Array(120).fill(false), comentario:'' });
+  renderRef(cat, id);
+  scheduleDraft();
+}
+
+function renderRef(cat, id) {
+  const r = refs[cat].find(x => x.id === id);
+  const idx = refs[cat].indexOf(r);
+  const div = document.createElement('div');
+  div.className = 'ref-card';
+  div.id = `rc_${cat}_${id}`;
+
+  const pills = CAT_SUBS[cat].map(s =>
+    `<button class="sub-pill${r.subtipo===s?' active':''}" onclick="setSubtipo('${cat}',${id},'${s}')">${s}</button>`
+  ).join('');
+
+  div.innerHTML = `
+    <div class="ref-header">
+      <span class="ref-badge">${cat.slice(0,3)} ${idx+1}</span>
+      <input type="text" placeholder="Referencia" value="${escH(r.nombre)}"
+        oninput="setNombre('${cat}',${id},this.value)">
+      <button class="btn-x" onclick="removeRef('${cat}',${id})">×</button>
+    </div>
+    <div class="sub-pills" id="pills_${cat}_${id}">${pills}</div>
+    <div class="grid-area">
+      <div class="grid-label">Cavidades defectuosas</div>
+      <div class="cavity-grid" id="grid_${cat}_${id}"></div>
+      <div class="marked-count" id="cnt_${cat}_${id}">0 marcadas</div>
+      <div class="marked-list" id="lst_${cat}_${id}"></div>
+    </div>
+    <div class="card-comment">
+      <input type="text" placeholder="Comentario..." value="${escH(r.comentario)}"
+        oninput="setComentario('${cat}',${id},this.value)">
+    </div>
+  `;
+  document.getElementById('refs_' + cat).appendChild(div);
+  buildMultiGrid(cat, id);
+}
+
+function buildMultiGrid(cat, id) {
+  const r = refs[cat].find(x => x.id === id);
+  const grid = document.getElementById(`grid_${cat}_${id}`);
+  if (!grid) return;
+  grid.style.gridTemplateColumns = `repeat(${globalCols}, 1fr)`;
+  grid.innerHTML = '';
+  for (let i = 0; i < 120; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell' + (r.cells[i] ? ' on' : '');
+    c.style.background = r.cells[i] ? globalColorActive : globalColorInactive;
+    c.style.borderColor = r.cells[i] ? globalColorActive : 'transparent';
+    c.style.color = r.cells[i] ? '#000' : '#888';
+    c.textContent = i + 1;
+    c.addEventListener('click', () => tapCell(cat, id, i, c));
+    grid.appendChild(c);
+  }
+  updateCount(cat, id);
+}
+
+function tapCell(cat, id, idx, el) {
+  const r = refs[cat].find(x => x.id === id);
+  r.cells[idx] = !r.cells[idx];
+  el.classList.toggle('on', r.cells[idx]);
+  el.style.background = r.cells[idx] ? globalColorActive : globalColorInactive;
+  el.style.borderColor = r.cells[idx] ? globalColorActive : 'transparent';
+  el.style.color = r.cells[idx] ? '#000' : '#888';
+  updateCount(cat, id);
+  recalc();
+}
+
+// GLOBAL SETTINGS
+function toggleSettings() {
+  document.getElementById('settingsPanel').classList.toggle('open');
+  document.getElementById('settingsOverlay').classList.toggle('open');
+}
+function closeSettings() {
+  document.getElementById('settingsPanel').classList.remove('open');
+  document.getElementById('settingsOverlay').classList.remove('open');
+}
+
+function setGlobalCols(cols, btn) {
+  globalCols = cols;
+  document.querySelectorAll('.col-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Update all multi grids
+  ['MOLDES','PREMOLDES'].forEach(cat => {
+    refs[cat].forEach(r => {
+      const grid = document.getElementById(`grid_${cat}_${r.id}`);
+      if (grid) grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    });
+  });
+  // Update radio grids
+  ['ANILLOS','TAPAS'].forEach(cat => {
+    const grid = document.getElementById('radioGrid_' + cat);
+    if (grid) grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  });
+}
+
+function setActiveColor(col) {
+  globalColorActive = col;
+  ['MOLDES','PREMOLDES'].forEach(cat => {
+    refs[cat].forEach(r => {
+      const grid = document.getElementById(`grid_${cat}_${r.id}`);
+      if (!grid) return;
+      grid.querySelectorAll('.cell.on').forEach(c => { c.style.background = col; c.style.borderColor = col; });
+    });
+  });
+  ['ANILLOS','TAPAS'].forEach(cat => {
+    if (radioVals[cat] > 0) {
+      const c = document.getElementById(`rc_${cat}_${radioVals[cat]}`);
+      if (c) { c.style.background = col; c.style.borderColor = col; }
+    }
+  });
+}
+
+function setInactiveColor(col) {
+  globalColorInactive = col;
+  ['MOLDES','PREMOLDES'].forEach(cat => {
+    refs[cat].forEach(r => {
+      const grid = document.getElementById(`grid_${cat}_${r.id}`);
+      if (!grid) return;
+      grid.querySelectorAll('.cell:not(.on)').forEach(c => { c.style.background = col; });
+    });
+  });
+  ['ANILLOS','TAPAS'].forEach(cat => {
+    const grid = document.getElementById('radioGrid_' + cat);
+    if (!grid) return;
+    grid.querySelectorAll('.cell:not(.radio-on)').forEach(c => { c.style.background = col; });
+  });
+}
+
+function resetSettings() {
+  // Reset values
+  globalCols = 10;
+  globalColorActive = '#f5a623';
+  globalColorInactive = '#111111';
+  // Reset UI controls
+  document.getElementById('colorActivePicker').value = '#f5a623';
+  document.getElementById('colorInactivePicker').value = '#111111';
+  document.querySelectorAll('.col-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.col-btn').forEach(b => { if (b.textContent === '10') b.classList.add('active'); });
+  // Rebuild all grids
+  ['MOLDES','PREMOLDES'].forEach(cat => refs[cat].forEach(r => buildMultiGrid(cat, r.id)));
+  buildRadioGrid('ANILLOS'); restoreRadio('ANILLOS', radioVals.ANILLOS);
+  buildRadioGrid('TAPAS');   restoreRadio('TAPAS',   radioVals.TAPAS);
+}
+
+function updateCount(cat, id) {
+  const r = refs[cat].find(x => x.id === id);
+  const marked = r.cells.map((v,i) => v ? i+1 : null).filter(Boolean);
+  const c = document.getElementById(`cnt_${cat}_${id}`);
+  const l = document.getElementById(`lst_${cat}_${id}`);
+  if (c) c.textContent = marked.length + ' marcadas';
+  if (l) l.textContent = marked.join(', ');
+}
+
+function setSubtipo(cat, id, sub) {
+  const r = refs[cat].find(x => x.id === id);
+  if (r) r.subtipo = sub;
+  document.querySelectorAll(`#pills_${cat}_${id} .sub-pill`).forEach(p => {
+    p.classList.toggle('active', p.textContent === sub);
+  });
+  recalc();
+}
+
+function setNombre(cat, id, val) { const r = refs[cat].find(x=>x.id===id); if(r) r.nombre=val; scheduleDraft(); }
+function setComentario(cat, id, val) { const r = refs[cat].find(x=>x.id===id); if(r) r.comentario=val; scheduleDraft(); }
+
+function removeRef(cat, id) {
+  refs[cat] = refs[cat].filter(r => r.id !== id);
+  document.getElementById(`rc_${cat}_${id}`)?.remove();
+  refs[cat].forEach((r,i) => {
+    const b = document.querySelector(`#rc_${cat}_${r.id} .ref-badge`);
+    if (b) b.textContent = cat.slice(0,3) + ' ' + (i+1);
+  });
+  recalc();
+}
+
+// DRAFT
+function scheduleDraft() { clearTimeout(draftTimer); draftTimer = setTimeout(saveDraft, 1500); }
+
+function saveDraft() {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify({
+    fecha: document.getElementById('fecha').value,
+    nombre: document.getElementById('nombre').value,
+    radioVals,
+    refs: {
+      MOLDES:    refs.MOLDES.map(r=>({id:r.id,nombre:r.nombre,subtipo:r.subtipo,comentario:r.comentario,cells:r.cells})),
+      PREMOLDES: refs.PREMOLDES.map(r=>({id:r.id,nombre:r.nombre,subtipo:r.subtipo,comentario:r.comentario,cells:r.cells}))
+    }
+  }));
+  const b = document.getElementById('draftBanner');
+  const m = document.getElementById('draftMsg');
+  b.classList.remove('hidden');
+  m.textContent = '✓ Borrador guardado';
+  setTimeout(() => { m.textContent = 'Borrador guardado'; }, 2000);
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    document.getElementById('draftBanner').classList.remove('hidden');
+    document.getElementById('draftMsg').textContent = 'Borrador guardado restaurado';
+    if (d.fecha) document.getElementById('fecha').value = d.fecha;
+    if (d.nombre) document.getElementById('nombre').value = d.nombre;
+    if (d.radioVals) { restoreRadio('ANILLOS', d.radioVals.ANILLOS||0); restoreRadio('TAPAS', d.radioVals.TAPAS||0); }
+    if (d.refs) {
+      ['MOLDES','PREMOLDES'].forEach(cat => {
+        (d.refs[cat]||[]).forEach(sr => {
+          refIdCtr = Math.max(refIdCtr, sr.id+1);
+          refs[cat].push({id:sr.id, nombre:sr.nombre||'', subtipo:sr.subtipo||CAT_SUBS[cat][0],
+            comentario:sr.comentario||'', cells:sr.cells||new Array(120).fill(false)});
+          renderRef(cat, sr.id);
+        });
+      });
+    }
+    recalc();
+  } catch(e) {}
+}
+
+function clearAll(silent = false) {
+  if (!silent && !confirm('¿Limpiar todos los campos?')) return;
+  refs = { MOLDES:[], PREMOLDES:[] };
+  refIdCtr = 0;
+  ['MOLDES','PREMOLDES'].forEach(cat => { const c = document.getElementById('refs_'+cat); if(c) c.innerHTML=''; });
+  document.getElementById('fecha').valueAsDate = new Date();
+  document.getElementById('nombre').value = '';
+  restoreRadio('ANILLOS', 0); restoreRadio('TAPAS', 0);
+  localStorage.removeItem(DRAFT_KEY);
+  document.getElementById('draftBanner').classList.add('hidden');
+  recalc();
+}
+
+// SUBMIT
+function submitForm() {
+  const fecha = document.getElementById('fecha').value;
+  const nombre = document.getElementById('nombre').value;
+  if (!fecha || !nombre) { showStatus('Completa Fecha y Nombre antes de enviar.', false); return; }
+
+  const sub = {};
+  ['MOLDES','PREMOLDES'].forEach(cat => {
+    CAT_SUBS[cat].forEach(s => sub[`${cat}_${s.toUpperCase()}`] = 0);
+    refs[cat].forEach(r => {
+      if (r.subtipo) { const k=`${cat}_${r.subtipo.toUpperCase()}`; sub[k]=(sub[k]||0)+r.cells.filter(Boolean).length; }
+    });
+  });
+
+  const payload = { FECHA:fecha, SECTOR:'TORNO', NOMBRE:nombre, ...sub, ANILLOS:radioVals.ANILLOS, TAPAS:radioVals.TAPAS };
+
+  let idx = 1;
+  ['MOLDES','PREMOLDES'].forEach(cat => {
+    refs[cat].forEach(r => {
+      payload[`REFERENCIA_${idx}`] = r.nombre;
+      payload[`CATEGORIA_${idx}`]  = cat;
+      payload[`SUBTIPO_${idx}`]    = r.subtipo;
+      payload[`CAVIDADES_${idx}`]  = r.cells.filter(Boolean).length;
+      payload[`COMENTARIO_${idx}`] = r.comentario;
+      idx++;
+    });
+  });
+
+  // Envío via formulario oculto
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_submit';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = APPS_SCRIPT_URL;
+  form.target = 'hidden_submit';
+  form.style.display = 'none';
+
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'data';
+  input.value = JSON.stringify(payload);
+  form.appendChild(input);
+
+  document.body.appendChild(form);
+  form.submit();
+
+  setTimeout(() => {
+    document.body.removeChild(form);
+    document.body.removeChild(iframe);
+  }, 5000);
+
+  showStatus('✓ Registro enviado correctamente.', true);
+  localStorage.removeItem(DRAFT_KEY);
+  clearAll(true);
+}
+
+function showStatus(msg, ok) {
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg; el.className = ok ? 'ok' : 'err';
+  el.scrollIntoView({behavior:'smooth'});
+  setTimeout(() => el.className='', 5000);
+}
+
+function escH(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+['fecha','nombre'].forEach(id => document.getElementById(id)?.addEventListener('change', scheduleDraft));
+</script>
+</body>
+</html>
